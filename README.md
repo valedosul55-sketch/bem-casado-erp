@@ -1,133 +1,310 @@
-# 🎂 ERP Bem Casado
+# 🛒 Loja Bem Casado - E-commerce Full-Stack
 
-Sistema ERP completo para gestão de buffet de casamentos, desenvolvido para otimizar todos os processos operacionais e administrativos.
+E-commerce completo para a **Bem Casado Alimentos**, com sistema de pagamentos, emissão de NFC-e, integração com ERP e funcionalidades avançadas de marketing.
 
-## 📋 Visão Geral
+---
 
-O **ERP Bem Casado** é uma solução integrada que centraliza a gestão de:
+## 🎯 Sobre o Projeto
 
-- **Clientes e Contratos**: Cadastro completo de clientes, orçamentos e contratos
-- **Eventos**: Planejamento e acompanhamento de casamentos e eventos
-- **Financeiro**: Contas a pagar/receber, fluxo de caixa e conciliação bancária
-- **Estoque**: Controle de ingredientes, produtos e movimentações
-- **Produção**: Gestão de receitas, fichas técnicas e ordens de produção
-- **Compras**: Pedidos de compra, fornecedores e cotações
-- **Fiscal**: Emissão de NF-e/NFC-e e controle tributário
-- **Recursos Humanos**: Cadastro de funcionários, ponto e folha de pagamento
-- **Relatórios**: Dashboards e análises gerenciais
+A **Loja Bem Casado** é uma plataforma de vendas online desenvolvida para a Bem Casado Alimentos, empresa especializada na produção e comercialização de arroz, feijão e açúcar. A loja permite que clientes comprem produtos em kits de 10 unidades (fardos de 10kg) diretamente da fábrica, com preços promocionais e entrega facilitada.
 
-## 🚀 Tecnologias
+**Domínio de Produção:** www.arrozbemcasado.com.br
 
-### Backend
-- **Node.js** com **TypeScript**
-- **Express.js** para API REST
-- **Prisma ORM** para banco de dados
-- **PostgreSQL** como banco principal
-- **Redis** para cache e filas
-- **JWT** para autenticação
+---
+
+## ✨ Funcionalidades
+
+### 🛍️ E-commerce
+- Catálogo de 5 produtos (arroz branco, arroz integral, feijão carioca, feijão preto, açúcar cristal)
+- Venda em kits de 10 unidades (fardos de 10kg)
+- Sistema de carrinho de compras
+- Filtros e busca de produtos
+- Visualização em lista/grade
+- Notificações de estoque baixo
+- Produtos alternativos sugeridos
+
+### 💳 Pagamentos
+- **SafraPay:** Cartão de crédito e vales alimentação
+- **PIX:** Pagamento instantâneo
+- **WhatsApp:** Finalização de pedidos via mensagem
+
+### 🧾 Fiscal
+- Emissão de NFC-e via Focus NFe
+- Certificado digital A1 configurado
+- Integração com Tiny ERP
+- Parametrização fiscal completa (ICMS, PIS, COFINS)
+- Consulta de CNPJ automática
+
+### 📧 Marketing
+- Sistema de cupons de desconto
+- Newsletter com cupom automático (NEWSLETTER5 - 5% OFF)
+- Integração com Mailchimp
+- WhatsApp Business
+- Clube VIP com planos de assinatura (Básico R$ 89,90 e Premium R$ 149,90)
+
+### 📊 Gestão
+- Dashboard administrativo
+- Sistema de relatórios exportáveis (Excel)
+- Gerenciamento de estoque
+- Histórico de vendas
+- Análise de cupons utilizados
+
+### 🛡️ Segurança e Backup
+- **Backup Automático:** Diário às 02:00 AM (UTC)
+- **Armazenamento:** Amazon S3 (Bucket: `backup-bem-casado-loja`)
+- **Retenção:** Dados fiscais e de clientes protegidos externamente
+
+### 🎨 Interface
+- Design responsivo (mobile, tablet, desktop)
+- Tema claro/escuro
+- Animações suaves
+- Galeria de fotos da fábrica
+- Página "Sobre Nós" completa
+- Mapa de localização integrado
+
+---
+
+## 🛠️ Tecnologias
 
 ### Frontend
-- **React** com **TypeScript**
-- **Vite** como build tool
-- **TailwindCSS** para estilização
-- **React Query** para gerenciamento de estado
-- **React Router** para navegação
+- **React 19.2** - Biblioteca UI
+- **TypeScript** - Tipagem estática
+- **Vite** - Build tool
+- **TailwindCSS** - Estilização
+- **Radix UI** - Componentes acessíveis
+- **Framer Motion** - Animações
+- **Recharts** - Gráficos
+- **React Three Fiber** - Visualização 3D
 
-### Infraestrutura
-- **AWS S3** para armazenamento de arquivos
-- **Railway** para deploy e hosting
-- **GitHub Actions** para CI/CD
-- **Cloudflare** para CDN e proteção
+### Backend
+- **Node.js** - Runtime
+- **Express** - Framework web
+- **tRPC** - API type-safe
+- **Drizzle ORM** - ORM para MySQL
+- **MySQL/TiDB** - Banco de dados
+- **Jose** - JWT authentication
+
+### Integrações
+- **Focus NFe** - Emissão de notas fiscais
+- **SafraPay** - Gateway de pagamento
+- **Mailchimp** - Email marketing
+- **Tiny ERP** - Sistema de gestão
+- **WhatsApp Business** - Comunicação com clientes
+- **AWS S3** - Armazenamento de arquivos e backups
+
+---
 
 ## 📁 Estrutura do Projeto
 
 ```
-bem-casado-erp/
-├── docs/                    # Documentação
-│   ├── setup/              # Guias de instalação e configuração
-│   ├── architecture/       # Arquitetura e diagramas
-│   └── api/                # Documentação da API
-├── src/
-│   ├── backend/            # Código do servidor
-│   │   ├── src/
-│   │   ├── prisma/
-│   │   └── tests/
-│   └── frontend/           # Código do cliente
-│       ├── src/
-│       ├── public/
-│       └── tests/
-├── scripts/                # Scripts de automação
-└── .github/                # Workflows do GitHub Actions
+bem_casado_loja/
+├── client/                 # Frontend React
+│   ├── src/
+│   │   ├── components/    # Componentes React
+│   │   ├── pages/         # Páginas da aplicação
+│   │   ├── hooks/         # Custom hooks
+│   │   ├── lib/           # Utilitários
+│   │   └── App.tsx        # Componente principal
+│   ├── public/            # Assets estáticos
+│   └── index.html         # HTML template
+│
+├── server/                # Backend Node.js
+│   ├── _core/            # Configuração do servidor
+│   ├── routers.ts        # Rotas tRPC
+│   ├── db.ts             # Conexão com banco
+│   ├── services/         # Serviços de negócio
+│   │   └── backup.ts     # Serviço de backup S3
+│   ├── focus-nfe.ts      # Integração Focus NFe
+│   ├── safrapay.ts       # Integração SafraPay
+│   ├── mailchimp.ts      # Integração Mailchimp
+│   ├── email.ts          # Envio de e-mails
+│   └── ...               # Outros módulos
+│
+├── shared/               # Código compartilhado
+│   └── schema.ts         # Schemas Drizzle
+│
+├── drizzle/              # Migrações do banco
+│
+├── scripts/              # Scripts utilitários
+│
+├── .env.example          # Exemplo de variáveis de ambiente
+├── package.json          # Dependências
+├── tsconfig.json         # Configuração TypeScript
+├── vite.config.ts        # Configuração Vite
+└── DEPLOY_PRODUCAO.md    # Guia de deploy
 ```
-
-## 🛠️ Instalação e Configuração
-
-Consulte a documentação completa em [`docs/setup/`](docs/setup/):
-
-1. [Configuração da AWS](docs/setup/aws-setup.md)
-2. [Setup do Ambiente de Desenvolvimento](docs/setup/dev-environment.md)
-3. [Deploy no Railway](docs/setup/railway-deploy.md)
-4. [Configuração Fiscal (NF-e/NFC-e)](docs/setup/fiscal-setup.md)
-
-## 📊 Funcionalidades Principais
-
-### Módulo de Eventos
-- Cadastro completo de eventos (casamentos, festas, etc.)
-- Timeline de planejamento
-- Checklist de tarefas
-- Gestão de fornecedores externos
-- Controle de pagamentos parcelados
-
-### Módulo Financeiro
-- Contas a pagar e receber
-- Fluxo de caixa projetado e realizado
-- Conciliação bancária automática
-- Relatórios financeiros
-- Integração com bancos (API)
-
-### Módulo de Produção
-- Fichas técnicas de receitas
-- Cálculo automático de custos
-- Ordens de produção
-- Controle de qualidade
-- Rastreabilidade de lotes
-
-### Módulo Fiscal
-- Emissão de NF-e (Nota Fiscal Eletrônica)
-- Emissão de NFC-e (Nota Fiscal ao Consumidor)
-- Controle de impostos (ICMS, PIS, COFINS)
-- SPED Fiscal
-- Integração com SEFAZ
-
-## 🔐 Segurança
-
-- Autenticação JWT com refresh tokens
-- Criptografia de dados sensíveis
-- Backup automático diário
-- Logs de auditoria
-- Controle de acesso por perfis (RBAC)
-
-## 📈 Roadmap
-
-- [ ] Fase 1: Módulos básicos (Clientes, Eventos, Financeiro)
-- [ ] Fase 2: Estoque e Produção
-- [ ] Fase 3: Fiscal e Integração SEFAZ
-- [ ] Fase 4: RH e Folha de Pagamento
-- [ ] Fase 5: Business Intelligence e Analytics
-- [ ] Fase 6: App Mobile
-
-## 🤝 Contribuindo
-
-Este é um projeto privado. Para contribuir, entre em contato com a equipe de desenvolvimento.
-
-## 📄 Licença
-
-Propriedade de **Bem Casado Buffet**. Todos os direitos reservados.
-
-## 📞 Suporte
-
-Para suporte técnico ou dúvidas, consulte a documentação ou entre em contato com a equipe de TI.
 
 ---
 
-**Desenvolvido com ❤️ para o Bem Casado Buffet**
+## 🚀 Instalação e Execução
+
+### Pré-requisitos
+
+- Node.js 22.x
+- pnpm 10.x
+- MySQL 8.x (ou TiDB)
+
+### 1. Instalar Dependências
+
+```bash
+cd bem_casado_loja
+pnpm install
+```
+
+### 2. Configurar Variáveis de Ambiente
+
+Copie o arquivo de exemplo e preencha com suas credenciais:
+
+```bash
+cp .env.example .env
+```
+
+Edite o arquivo `.env` e configure:
+
+- `DATABASE_URL` - URL de conexão com MySQL
+- `JWT_SECRET` - Chave secreta para JWT
+- `FOCUS_NFE_TOKEN` - Token da Focus NFe
+- `SAFRAPAY_*` - Credenciais SafraPay
+- `SMTP_*` - Configurações de e-mail
+- `MAILCHIMP_*` - Credenciais Mailchimp
+- `AWS_*` - Credenciais S3 para backup
+- E outras variáveis conforme necessário
+
+### 3. Executar Migrações do Banco
+
+```bash
+pnpm db:push
+```
+
+### 4. Iniciar Servidor de Desenvolvimento
+
+```bash
+pnpm dev
+```
+
+A aplicação estará disponível em: http://localhost:3000
+
+### 5. Build para Produção
+
+```bash
+pnpm build
+```
+
+### 6. Iniciar em Produção
+
+```bash
+pnpm start
+```
+
+---
+
+## 📝 Scripts Disponíveis
+
+| Script | Descrição |
+|--------|-----------|
+| `pnpm dev` | Inicia servidor de desenvolvimento |
+| `pnpm build` | Gera build de produção |
+| `pnpm start` | Inicia servidor em produção |
+| `pnpm check` | Verifica tipos TypeScript |
+| `pnpm format` | Formata código com Prettier |
+| `pnpm test` | Executa testes |
+| `pnpm db:push` | Executa migrações do banco |
+
+---
+
+## 🌐 Deploy em Produção
+
+Para fazer o deploy da loja no domínio **www.arrozbemcasado.com.br**, siga o guia completo em:
+
+📄 **[DEPLOY_PRODUCAO.md](./DEPLOY_PRODUCAO.md)**
+
+O guia inclui:
+- Passo a passo detalhado para Railway (recomendado)
+- Configuração de domínio personalizado
+- Configuração de SSL/HTTPS
+- Configuração de banco de dados em nuvem
+- Checklist de segurança
+- Solução de problemas comuns
+
+---
+
+## 🔐 Segurança
+
+- ✅ Todas as senhas e tokens são armazenados em variáveis de ambiente
+- ✅ Arquivo `.env` está no `.gitignore` (nunca é commitado)
+- ✅ JWT para autenticação segura
+- ✅ HTTPS obrigatório em produção
+- ✅ Validação de entrada em todas as rotas
+- ✅ Proteção contra SQL injection (via Drizzle ORM)
+- ✅ Rate limiting em endpoints sensíveis
+- ✅ Backup diário criptografado em S3
+
+---
+
+## 📊 Dados de Teste
+
+### Cupons de Desconto
+
+| Código | Desconto | Descrição |
+|--------|----------|-----------|
+| `BEMVINDO10` | 10% | Cupom de boas-vindas |
+| `FIDELIDADE15` | 15% | Cupom de fidelidade |
+| `PRIMEIRACOMPRA` | 20% | Primeira compra |
+| `NEWSLETTER5` | 5% | Cadastro na newsletter |
+
+### Produtos
+
+| Produto | Peso | Preço Unitário | Preço Kit (10un) |
+|---------|------|----------------|------------------|
+| Arroz Branco | 1kg | R$ 5,90 | R$ 54,90 |
+| Arroz Integral | 1kg | R$ 7,90 | R$ 74,90 |
+| Feijão Carioca | 1kg | R$ 6,90 | R$ 64,90 |
+| Feijão Preto | 1kg | R$ 6,90 | R$ 64,90 |
+| Açúcar Cristal | 1kg | R$ 4,90 | R$ 44,90 |
+
+---
+
+## 🤝 Contribuindo
+
+Este é um projeto privado da Bem Casado Alimentos. Para contribuir:
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
+
+---
+
+## 📄 Documentação Adicional
+
+- **[CACHE_SYSTEM.md](./CACHE_SYSTEM.md)** - Sistema de cache
+- **[CONFIGURACAO_NFCE.md](./CONFIGURACAO_NFCE.md)** - Configuração de NFC-e
+- **[SECURITY_PAYMENTS.md](./SECURITY_PAYMENTS.md)** - Segurança em pagamentos
+- **[MAILCHIMP_SETUP.md](./MAILCHIMP_SETUP.md)** - Configuração do Mailchimp
+- **[todo.md](./todo.md)** - Lista de tarefas e histórico
+
+---
+
+## 📞 Contato
+
+**Bem Casado Alimentos**
+- **Site:** www.arrozbemcasado.com.br
+- **E-mail:** contato@arrozbemcasado.com.br
+- **WhatsApp:** (12) 3197-3400
+- **Instagram:** @bemcasadoalimentos (20k+ seguidores)
+- **Endereço:** Fábrica de arroz - São José dos Campos, SP
+- **GPS:** -23.187869, -45.764573
+
+**Horário de Funcionamento:**
+- Sábados e Domingos: 7h às 13h
+
+---
+
+## 📜 Licença
+
+© 2024 Bem Casado Alimentos. Todos os direitos reservados.
+
+---
+
+**Desenvolvido com ❤️ para a Bem Casado Alimentos**

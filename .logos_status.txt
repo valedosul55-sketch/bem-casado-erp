@@ -1,0 +1,18 @@
+STATUS DOS LOGOS - Modal "Como Chegar"
+========================================
+
+Data: 08/12/2025 16:04 GMT-3
+
+PROBLEMA: Os logos do Google Maps e Waze ainda estão pequenos e não legíveis no celular
+
+Tentativas realizadas:
+1. ❌ 64px (w-16 h-16) - Muito pequeno
+2. ❌ 96px (w-24 h-24) - Ainda pequeno
+3. ❌ 128px (w-32 h-32) - Continua pequeno (deploy atual)
+
+Observação: O deploy de 128px foi concluído, mas os logos ainda aparecem pequenos na visualização.
+
+Próxima ação sugerida:
+- Aumentar para 160px (w-40 h-40) ou 192px (w-48 h-48)
+- Verificar se as imagens originais têm boa resolução
+- Considerar usar SVG ao invés de PNG para melhor escalabilidade

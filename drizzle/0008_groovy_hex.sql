@@ -1,0 +1,1 @@
+ALTER TABLE "stores" ADD COLUMN "stockValuationMethod" varchar(20) DEFAULT 'fifo' NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE "stores" ADD COLUMN "notificationEmail" varchar(320);

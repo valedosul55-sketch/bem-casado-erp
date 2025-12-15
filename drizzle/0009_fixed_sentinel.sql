@@ -1,0 +1,1 @@
+ALTER TABLE "stores" ADD COLUMN "taxRegime" varchar(20) DEFAULT 'presumido' NOT NULL;

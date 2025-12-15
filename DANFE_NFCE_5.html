@@ -1,0 +1,350 @@
+<!doctype html>
+<html moznomarginboxes mozdisallowselectionprint>
+<head>
+<meta charset="utf-8">
+<title>Nota Fiscal ao Consumidor Eletrônica | Focus NFe</title>
+
+<script src="https://df0b2gxkwzojk.cloudfront.net/javascripts/jquery.js" type="text/javascript"></script>
+<script src="https://df0b2gxkwzojk.cloudfront.net/javascripts/qrcode.min.js" type="text/javascript"></script>
+
+<style type="text/css" media="print">
+
+@page {
+ size: auto;   /* tamanho da página na impressora */
+ margin: 0mm;  /* <--- por ser margem 0, o cabeçalho e o rodapé não aparecem */
+}
+
+body {
+  margin: 10px 0px 10px 5px; /* <--- controla a margem apenas na impressão */
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8px;
+}
+.content {
+  display: table;
+  max-width: 300px;
+  border: 0 solid #000 !important;
+
+}
+.tabela-nfce {
+  width: 100%;
+}
+
+.linha {
+    border-bottom: 2px solid #000;
+    margin: 5px 0;
+}
+
+.dados-da-empresa td {
+   font-size: 10px
+}
+
+</style>
+<style type='text/css'>
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 8px;
+}
+.content {
+  max-width: 500px;
+  margin: 0 auto;
+  border: 1px solid #000;
+  padding: 10px;
+}
+.tabela-nfce {
+  width: 100%;
+}
+
+.linha {
+    border-bottom: 2px solid #000;
+    margin: 5px 0;
+}
+
+.dados-da-empresa td {
+   font-size: 10px
+}
+
+</style>
+
+<script type="text/javascript">
+
+$(document).ready(function () {
+  var qrcode = new QRCode(document.getElementById('qr-code0'), {
+    text: "https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=35251214295537000130650010000000051257035156|3|2",
+    width: 250,
+    height: 250,
+    colorDark : "#000000",
+    colorLight : "#ffffff",
+    correctLevel : QRCode.CorrectLevel.M
+  });
+  document.getElementById('qr-code0').style.margin = "36px"
+  if (document.getElementById('qr-code1')) {
+    var qrcode = new QRCode(document.getElementById('qr-code1'), {
+      text: "https://www.homologacao.nfce.fazenda.sp.gov.br/NFCeConsultaPublica/Paginas/ConsultaQRCode.aspx?p=35251214295537000130650010000000051257035156|3|2",
+      width: 250,
+      height: 250,
+      colorDark : "#000000",
+      colorLight : "#ffffff",
+      correctLevel : QRCode.CorrectLevel.M
+    });
+    document.getElementById('qr-code1').style.margin = "36px"
+  }
+})
+</script>
+
+</head>
+
+<body>
+<div class="content">
+  <div class="tabela-nfce">
+
+    <!-- Logomarca NFC-e -->
+
+    <div class="logomarca">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tr>
+          <td align="center">
+              <img src="https://homologacao.focusnfe.com.br/images/logo-nfce.png" />
+          </td>
+        </tr>
+        <tr>
+          <td align="left"><span style="font-size: 16px;"><strong><em>NFC-e</em></strong></span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Logomarca NFC-e -->
+
+
+    <!-- Dados da Empresa -->
+
+    <div class="dados-da-empresa">
+      <table width="100%" border="0" cellpadding="2" cellspacing="0" style="font-size: 10px;">
+        <tr>
+          <td>INDUSTRIA E COMERCIO DE ALIMENTOS BEM CASADO LTDA</td>
+        </tr>
+        <tr>
+          <td>CNPJ: 14.295.537/0001-30  IE:  645342314116</td>
+        </tr>
+        <tr>
+          <td>ESTRADA MUNICIPAL SANTO ANTONIO DO ALTO, 257 - PARQUE NOVO HORIZONTE </td>
+        </tr>
+        <tr>
+          <td>CEP: 12.225-810 - Tel.: </td>
+        </tr>
+        <tr>
+          <td>São José dos Campos - SP</td>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Dados da Empresa -->
+
+
+    <!-- Alerta Documento Auxiliar -->
+
+    <div class="documento-auxiliar">
+      <table width="100%" border="0" cellpadding="2" cellspacing="0" style="font-size: 10px">
+        <tr>
+          <td align="center">
+            DANFE NFC-e Documento Auxiliar<br>
+            da Nota Fiscal ao Consumidor Eletrônica<br>
+            Não permite aproveitamento de crédito de ICMS
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Alerta Documento Auxiliar -->
+
+    <div class="linha"></div>
+
+    <!-- Lista dos produtos -->
+
+    <div class="lista-produtos">
+      <table width="100%" border="0" cellpadding="2" cellspacing="0" style="font-size: 10px;">
+        <tr>
+          <th align="left" scope="col">Cód.</th>
+          <th align="left" scope="col">Descrição</th>
+          <th align="left" scope="col">Qtd.</th>
+          <th align="left" scope="col">Un</th>
+          <th align="right" scope="col">Vl. Unit</th>
+          <th align="right" scope="col">Vl. Total</th>
+        </tr>
+        <tr>
+          <td>7896285902176</td>
+          <td>
+            NOTA FISCAL EMITIDA EM AMBIENTE DE HOMOLOGACAO - SEM VALOR FISCAL
+          </td>
+          <td>
+            1,0
+          </td>
+          <td>UN</td>
+          <td align="right">29,90</td>
+          <td align="right">R$ 29,90</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Lista dos produtos -->
+
+    <div class="linha"></div>
+
+    <!-- Valor total dos produtos -->
+
+    <div class="valor-total">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 10px;">
+        <tr>
+          <td><strong>Qtd. Total de Itens</strong></td>
+          <td align="right"><strong>1</strong></td>
+        </tr>
+        <tr>
+          <td><strong>Valor Total</strong></td>
+          <td align="right"><strong>R$ 29,90</strong></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Valor total dos produtos -->
+
+
+    <!-- Formas de pagamento -->
+
+    <div class="forma-pagamento">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 10px;">
+        <tr>
+          <td height="10"></td>
+          <td height="10"></td>
+        </tr>
+        <tr>
+          <td>Forma de Pagamento</td>
+          <td align="right">Valor pago</td>
+        </tr>
+        <tr>
+          <td>- Pagamento Instantâneo (PIX)</td>
+          <td align="right">R$ 29,90</td>
+        </tr>
+        <tr>
+          <td>Troco </td>
+          <td align="right">R$ 0,00</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Formas de pagamento -->
+
+    <div class="linha"></div>
+
+    <!-- Tributação -->
+
+    <div class="tributacao">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2" style="font-size: 10px;">
+        <tr>
+          <td> Tributos Totais Incidentes (Lei n.º12.741/2012) - R$</td>
+          <td align="right"> </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Tributação -->
+
+    <div class="linha"></div>
+
+    <!-- Informações Adicionais -->
+
+    <div class="info-adicionais">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr>
+          <td align="left"><span style="font-size: 10px;"></span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Informações Adicionais -->
+
+    <div class="linha"></div>
+
+    <!-- Homologação -->
+
+    <div class="homologacao">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr>
+          <td><span style="font-size: 10px;">Número: 5 - Série: 1 Data de Emissão: 10/12/2025 14:10:30 - Via Consumidor</span></td>
+        </tr>
+        <tr>
+          <td align="center"><span style="font-size: 10px;"><strong>Consulte pela chave de acesso em</strong></span></td>
+        </tr>
+        <tr>
+          <td align="center"><span style="font-size: 10px;">https://www.homologacao.nfce.fazenda.sp.gov.br/consulta</span></td>
+        </tr>
+        <tr>
+          <td align="center"><span style="font-size: 10px;">CHAVE DE ACESSO</span></td>
+        </tr>
+        <tr>
+          <td align="center">
+            <span style="font-size: 10px;">
+              <strong>
+                  NFe 3525 1214 2955 3700 0130 6500 1000 0000 0512 5703 5156
+              </strong>
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Homologação -->
+
+    <div class="linha"></div>
+
+    <!-- Dados do consumidor -->
+
+    <div class="consumidor">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr>
+          <td align="center"><span style="font-size: 10px;"><strong>CONSUMIDOR</strong></span></td>
+        </tr>
+        <tr>
+          <td align="center"><span style="font-size: 10px;">
+            CONSUMIDOR NÃO IDENTIFICADO
+          </span></td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Dados do consumidor -->
+
+    <div class="linha"></div>
+
+    <!-- QR Code -->
+
+    <div class="qrcode">
+      <table width="100%" border="0" cellspacing="0" cellpadding="2">
+        <tr>
+          <td align="center"><span style="font-size: 14px;">Consulta via Leitor de QR Code</span></td>
+        </tr>
+        <tr>
+          <td align="center">
+            <div id='qr-code0'></div>
+          </td>
+        </tr>
+        <tr>
+          <td align='center'>
+            <span style="font-size: 10px;">
+            Protocolo de autorização: 13525000008596451 - 10/12/2025 11:10:32
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- QR Code -->
+
+  </div>
+</div>
+
+
+</body>
+</html>

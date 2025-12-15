@@ -1,0 +1,1 @@
+ALTER TABLE "products" ADD COLUMN "averageCost" integer DEFAULT 0 NOT NULL;

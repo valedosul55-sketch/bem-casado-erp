@@ -1,0 +1,9 @@
+# Configuração para o Railway instalar o cliente PostgreSQL (necessário para pg_dump)
+[phases.setup]
+aptPkgs = ["postgresql-client"]
+
+[phases.build]
+cmds = ["pnpm install", "pnpm run build"]
+
+[start]
+cmd = "pnpm run start"

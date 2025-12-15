@@ -1,0 +1,25 @@
+DEPLOY LOG - Loja Bem Casado
+================================
+
+Data: 08/12/2025 16:13 GMT-3
+Status: ✅ SUCESSO
+
+Alteração: Substituição dos ícones Google Maps e Waze por versões de alta qualidade
+Arquivos: 
+- client/public/logos/google-maps.png (1400x1400px)
+- client/public/logos/waze.png (1600x1600px)
+
+Commit: "Substituir ícones Maps/Waze por versões de alta qualidade (1400x1400 e 1600x1600)"
+Deploy: Railway automático via GitHub
+
+Testes realizados:
+- ✅ Cache limpo automaticamente (Ctrl+Shift+R)
+- ✅ Modal "Como Chegar" testado
+- ✅ Ícones de alta resolução carregados
+- ✅ Tamanho 128px (w-32 h-32) mantido
+
+Observação: Ícones agora são os mesmos que aparecem nos aplicativos do celular (estilo ícones de app)
+
+Próximos passos:
+1. Aguardar teste do usuário no celular
+2. Criar checkpoint #6 se aprovado
