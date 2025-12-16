@@ -39,10 +39,14 @@ export function getSessionCookieOptions(
   //       ? hostname
   //       : undefined;
 
+  // sameSite: "none" requires secure: true
+  // For Railway and other proxied environments, always use secure: true
+  const isSecure = isSecureRequest(req) || process.env.NODE_ENV === 'production';
+  
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req),
+    sameSite: isSecure ? "none" : "lax",
+    secure: isSecure,
   };
 }
