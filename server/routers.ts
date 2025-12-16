@@ -59,13 +59,14 @@ export const appRouter = router({
           throw new Error("Usuário ou senha inválidos");
         }
 
-        // Create JWT token and set cookie
-        const jwt = await import("jsonwebtoken");
-        const token = jwt.default.sign(
-          { openId: user.openId, userId: user.id },
-          process.env.JWT_SECRET || "secret",
-          { expiresIn: "7d" }
-        );
+        // Create session token using SDK (same format as OAuth)
+        const { sdk } = await import("./_core/sdk");
+        const { ENV } = await import("./_core/env");
+        const token = await sdk.signSession({
+          openId: user.openId,
+          appId: ENV.appId,
+          name: user.name || user.username || "",
+        });
 
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
