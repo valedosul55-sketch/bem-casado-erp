@@ -3,6 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
+import { sendPasswordResetEmail } from './email';
 import {
   getCustomers,
   authenticateLocalUser,
@@ -507,12 +508,18 @@ export const appRouter = router({
         if (result) {
           const resetUrl = `https://bem-casado-erp-production.up.railway.app/redefinir-senha?token=${result.resetToken}`;
           
-          // Store email info for admin notification (since we can't send emails directly from server)
-          // The admin will be notified and can forward the link to the user
-          console.log(`[Password Reset] Token generated for ${result.email}: ${resetUrl}`);
+          // Send email with reset link
+          const emailSent = await sendPasswordResetEmail(
+            result.email || '',
+            resetUrl,
+            result.name || 'Usuário'
+          );
           
-          // Note: Email sending via Gmail MCP is only available in the Manus sandbox environment
-          // For production, consider integrating with SendGrid, Mailchimp, or similar service
+          if (emailSent) {
+            console.log(`[Password Reset] Email sent to ${result.email}`);
+          } else {
+            console.log(`[Password Reset] Failed to send email to ${result.email}. Token: ${result.resetToken}`);
+          }
         }
         
         // Always return success to prevent email enumeration

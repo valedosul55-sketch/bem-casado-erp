@@ -1,0 +1,113 @@
+import nodemailer from 'nodemailer';
+
+// Configuração do transporter SMTP do Gmail
+const transporter = nodemailer.createTransport({
+  host: 'smtp.gmail.com',
+  port: 587,
+  secure: false, // true para 465, false para outras portas
+  auth: {
+    user: process.env.SMTP_USER || 'admin@arrozbemcasado.com.br',
+    pass: process.env.SMTP_PASS || '',
+  },
+});
+
+interface EmailOptions {
+  to: string;
+  subject: string;
+  text?: string;
+  html?: string;
+}
+
+export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  try {
+    const mailOptions = {
+      from: `"ERP Bem Casado" <${process.env.SMTP_USER || 'admin@arrozbemcasado.com.br'}>`,
+      to: options.to,
+      subject: options.subject,
+      text: options.text,
+      html: options.html,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('[Email] Message sent:', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('[Email] Failed to send email:', error);
+    return false;
+  }
+}
+
+export async function sendPasswordResetEmail(
+  email: string,
+  resetLink: string,
+  userName: string
+): Promise<boolean> {
+  const subject = 'Recuperação de Senha - ERP Bem Casado';
+  
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #f97316, #fbbf24); padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .header h1 { color: white; margin: 0; }
+        .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px; }
+        .button { display: inline-block; background: #f97316; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+        .button:hover { background: #ea580c; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+        .warning { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; border-radius: 5px; margin-top: 20px; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🍰 BEM CASADO</h1>
+        </div>
+        <div class="content">
+          <h2>Olá, ${userName}!</h2>
+          <p>Recebemos uma solicitação para redefinir a senha da sua conta no ERP Bem Casado.</p>
+          <p>Clique no botão abaixo para criar uma nova senha:</p>
+          <p style="text-align: center;">
+            <a href="${resetLink}" class="button">Redefinir Minha Senha</a>
+          </p>
+          <p>Ou copie e cole o link abaixo no seu navegador:</p>
+          <p style="word-break: break-all; background: #eee; padding: 10px; border-radius: 5px;">
+            ${resetLink}
+          </p>
+          <div class="warning">
+            <strong>⚠️ Importante:</strong> Este link expira em 1 hora. Se você não solicitou a redefinição de senha, ignore este email.
+          </div>
+        </div>
+        <div class="footer">
+          <p>Este é um email automático. Por favor, não responda.</p>
+          <p>© ${new Date().getFullYear()} Bem Casado - Sistema de Gestão para Confeitaria</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const text = `
+Olá, ${userName}!
+
+Recebemos uma solicitação para redefinir a senha da sua conta no ERP Bem Casado.
+
+Clique no link abaixo para criar uma nova senha:
+${resetLink}
+
+Este link expira em 1 hora. Se você não solicitou a redefinição de senha, ignore este email.
+
+---
+ERP Bem Casado - Sistema de Gestão para Confeitaria
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    text,
+    html,
+  });
+}

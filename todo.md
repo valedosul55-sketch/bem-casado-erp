@@ -111,3 +111,9 @@
 - [x] Ocultar menus não autorizados na sidebar
 - [x] Bloquear acesso a rotas não autorizadas
 - [x] Tela de configurações do usuário
+
+## Configuração SMTP Gmail
+- [ ] Configurar variáveis de ambiente SMTP no Railway
+- [ ] Implementar função de envio de email
+- [ ] Integrar envio de email na recuperação de senha
+- [ ] Testar envio de email
