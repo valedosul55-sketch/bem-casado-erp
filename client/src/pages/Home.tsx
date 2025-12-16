@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
-import { Loader2, Cloud, Lock, Building2, Users, Briefcase, User } from "lucide-react";
+import { Loader2, Cloud, Lock, Building2, Users, Briefcase, User, AlertCircle } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -18,6 +18,19 @@ export default function Home() {
     usuario: "",
     senha: "",
   });
+  const [error, setError] = useState("");
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const loginMutation = trpc.auth.localLogin.useMutation({
+    onSuccess: () => {
+      // Refresh the page to update auth state
+      window.location.href = "/dashboard";
+    },
+    onError: (err) => {
+      setError(err.message || "Erro ao fazer login");
+      setIsLoggingIn(false);
+    },
+  });
 
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -25,8 +38,20 @@ export default function Home() {
     }
   }, [isAuthenticated, user, setLocation]);
 
-  const handleLogin = () => {
-    window.location.href = getLoginUrl();
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    
+    if (!formData.usuario || !formData.senha) {
+      setError("Preencha usuário e senha");
+      return;
+    }
+
+    setIsLoggingIn(true);
+    loginMutation.mutate({
+      username: formData.usuario,
+      password: formData.senha,
+    });
   };
 
   if (loading) {
@@ -64,95 +89,115 @@ export default function Home() {
           <h1 className="text-2xl font-bold text-gray-800">BEM CASADO</h1>
           <p className="text-sm text-gray-500">Sistema de Gestão para Confeitaria</p>
         </CardHeader>
-        <CardContent className="space-y-4 px-6 pb-8">
-          {/* Empresa */}
-          <div className="space-y-1">
-            <Label htmlFor="empresa" className="text-xs text-gray-500 flex items-center gap-1">
-              <Building2 className="w-3 h-3" />
-              EMPRESA
-            </Label>
-            <Input
-              id="empresa"
-              value={formData.empresa}
-              onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-              className="bg-gray-50 border-gray-200"
-              readOnly
-            />
-          </div>
+        <CardContent className="px-6 pb-8">
+          <form onSubmit={handleLogin} className="space-y-4">
+            {/* Error message */}
+            {error && (
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                {error}
+              </div>
+            )}
 
-          {/* Filial e Departamento */}
-          <div className="grid grid-cols-2 gap-3">
+            {/* Empresa */}
             <div className="space-y-1">
-              <Label htmlFor="filial" className="text-xs text-gray-500 flex items-center gap-1">
-                <Users className="w-3 h-3" />
-                FILIAL
+              <Label htmlFor="empresa" className="text-xs text-gray-500 flex items-center gap-1">
+                <Building2 className="w-3 h-3" />
+                EMPRESA
               </Label>
               <Input
-                id="filial"
-                value={formData.filial}
-                onChange={(e) => setFormData({ ...formData, filial: e.target.value })}
+                id="empresa"
+                value={formData.empresa}
+                onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
                 className="bg-gray-50 border-gray-200"
                 readOnly
               />
             </div>
+
+            {/* Filial e Departamento */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label htmlFor="filial" className="text-xs text-gray-500 flex items-center gap-1">
+                  <Users className="w-3 h-3" />
+                  FILIAL
+                </Label>
+                <Input
+                  id="filial"
+                  value={formData.filial}
+                  onChange={(e) => setFormData({ ...formData, filial: e.target.value })}
+                  className="bg-gray-50 border-gray-200"
+                  readOnly
+                />
+              </div>
+              <div className="space-y-1">
+                <Label htmlFor="departamento" className="text-xs text-gray-500 flex items-center gap-1">
+                  <Briefcase className="w-3 h-3" />
+                  DEPARTAMENTO
+                </Label>
+                <Input
+                  id="departamento"
+                  value={formData.departamento}
+                  onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
+                  className="bg-gray-50 border-gray-200"
+                  readOnly
+                />
+              </div>
+            </div>
+
+            {/* Usuário */}
             <div className="space-y-1">
-              <Label htmlFor="departamento" className="text-xs text-gray-500 flex items-center gap-1">
-                <Briefcase className="w-3 h-3" />
-                DEPARTAMENTO
+              <Label htmlFor="usuario" className="text-xs text-gray-500 flex items-center gap-1">
+                <User className="w-3 h-3" />
+                USUÁRIO
               </Label>
               <Input
-                id="departamento"
-                value={formData.departamento}
-                onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
+                id="usuario"
+                value={formData.usuario}
+                onChange={(e) => setFormData({ ...formData, usuario: e.target.value })}
+                placeholder="Seu usuário"
                 className="bg-gray-50 border-gray-200"
-                readOnly
+                autoComplete="username"
               />
             </div>
-          </div>
 
-          {/* Usuário */}
-          <div className="space-y-1">
-            <Label htmlFor="usuario" className="text-xs text-gray-500 flex items-center gap-1">
-              <User className="w-3 h-3" />
-              USUÁRIO
-            </Label>
-            <Input
-              id="usuario"
-              value={formData.usuario}
-              onChange={(e) => setFormData({ ...formData, usuario: e.target.value })}
-              placeholder="Seu usuário"
-              className="bg-gray-50 border-gray-200"
-            />
-          </div>
+            {/* Senha */}
+            <div className="space-y-1">
+              <Label htmlFor="senha" className="text-xs text-gray-500 flex items-center gap-1">
+                <Lock className="w-3 h-3" />
+                SENHA
+              </Label>
+              <Input
+                id="senha"
+                type="password"
+                value={formData.senha}
+                onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+                placeholder="Sua senha"
+                className="bg-gray-50 border-gray-200"
+                autoComplete="current-password"
+              />
+            </div>
 
-          {/* Senha */}
-          <div className="space-y-1">
-            <Label htmlFor="senha" className="text-xs text-gray-500 flex items-center gap-1">
-              <Lock className="w-3 h-3" />
-              SENHA
-            </Label>
-            <Input
-              id="senha"
-              type="password"
-              value={formData.senha}
-              onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-              placeholder="Sua senha"
-              className="bg-gray-50 border-gray-200"
-            />
-          </div>
+            {/* Login Button */}
+            <Button
+              type="submit"
+              disabled={isLoggingIn}
+              className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold py-6 text-lg shadow-lg shadow-orange-200 disabled:opacity-50"
+            >
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  ENTRANDO...
+                </>
+              ) : (
+                "ENTRAR"
+              )}
+            </Button>
 
-          {/* Login Button */}
-          <Button
-            onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold py-6 text-lg shadow-lg shadow-orange-200"
-          >
-            ENTRAR
-          </Button>
-
-          {/* Footer */}
-          <p className="text-center text-xs text-gray-400 pt-4">
-            ERP Bem Casado v1.0 - Sistema de Gestão
-          </p>
+            {/* Footer */}
+            <p className="text-center text-xs text-gray-400 pt-4">
+              ERP Bem Casado v1.0 - Sistema de Gestão
+            </p>
+          </form>
         </CardContent>
       </Card>
     </div>

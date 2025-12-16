@@ -1,0 +1,10 @@
+{
+  "query": "INSERT INTO users (\"openId\", name, email, \"loginMethod\", role, \"passwordHash\", username, empresa, filial, departamento, \"createdAt\", \"updatedAt\", \"lastSignedIn\")\nVALUES ('local_admin_001', 'Administrador', 'admin@bemcasado.com', 'local', 'admin', '$2b$10$J61KkdSLricqnGjXDJgfoePBqmIPjCeez2wzJfyQDeKZgadLZqGCa', 'admin', 'BEM CASADO', 'MATRIZ', 'TI', NOW(), NOW(), NOW())\nON CONFLICT (\"openId\") DO UPDATE SET \"passwordHash\" = '$2b$10$J61KkdSLricqnGjXDJgfoePBqmIPjCeez2wzJfyQDeKZgadLZqGCa', username = 'admin';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4BDC48ZHXVijcoX.2f42e1d912a8 --database 8NmvBBSEEfSLdMuJvLE7Pa --execute INSERT INTO users (\"openId\", name, email, \"loginMethod\", role, \"passwordHash\", username, empresa, filial, departamento, \"createdAt\", \"updatedAt\", \"lastSignedIn\")\nVALUES ('local_admin_001', 'Administrador', 'admin@bemcasado.com', 'local', 'admin', '$2b$10$J61KkdSLricqnGjXDJgfoePBqmIPjCeez2wzJfyQDeKZgadLZqGCa', 'admin', 'BEM CASADO', 'MATRIZ', 'TI', NOW(), NOW(), NOW())\nON CONFLICT (\"openId\") DO UPDATE SET \"passwordHash\" = '$2b$10$J61KkdSLricqnGjXDJgfoePBqmIPjCeez2wzJfyQDeKZgadLZqGCa', username = 'admin';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1064 (42000) at line 1: You have an error in your SQL syntax; check the manual that corresponds to your TiDB version for the right syntax to use line 1 column 27 near \"\"openId\", name, email, \"loginMethod\", role, \"passwordHash\", username, empresa, filial, departamento, \"createdAt\", \"updatedAt\", \"lastSignedIn\")",
+    "VALUES ('local_admin_001', 'Administrador', 'admin@bemcasado.com', 'local', 'admin', '$2b$10$J61KkdSLricqnGjXDJgfoePBqmIPjCeez2wzJfyQDeKZgadLZqGCa', 'admin', 'BEM CASADO', 'MATRIZ', 'TI', NOW(), NOW(), NOW())",
+    "ON CONFLICT (\"o"
+  ]
+}

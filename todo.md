@@ -84,3 +84,11 @@
 ## Correção Deploy Railway
 - [x] Corrigir erro "Cannot GET /" no Railway
 - [ ] Corrigir erro "Invalid URL" no Railway
+
+## Autenticação Local (Railway)
+- [x] Adicionar campo de senha hash ao schema de usuários
+- [x] Implementar rota de login local no backend
+- [x] Implementar rota de registro de usuários
+- [x] Atualizar frontend para autenticação local
+- [x] Criar usuário admin padrão
+- [ ] Deploy e teste no Railway

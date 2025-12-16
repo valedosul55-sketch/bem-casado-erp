@@ -1,5 +1,5 @@
 import { eq, desc, sql, and, lte, gte } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle } from "drizzle-orm/mysql2";
 import { 
   InsertUser, 
   users, 
@@ -88,9 +88,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    // PostgreSQL upsert using ON CONFLICT
-    await db.insert(users).values(values).onConflictDoUpdate({
-      target: users.openId,
+    // MySQL upsert using ON DUPLICATE KEY UPDATE
+    await db.insert(users).values(values).onDuplicateKeyUpdate({
       set: updateSet,
     });
   } catch (error) {
@@ -121,7 +120,7 @@ export async function createCustomer(data: Omit<InsertCustomer, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(customers).values(data).returning({ id: customers.id });
+  const result = await db.insert(customers).values(data).$returningId();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -153,7 +152,7 @@ export async function createCategory(data: Omit<InsertCategory, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(categories).values(data).returning({ id: categories.id });
+  const result = await db.insert(categories).values(data).$returningId();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -176,7 +175,7 @@ export async function createProduct(data: Omit<InsertProduct, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(products).values({ ...data, active: true }).returning({ id: products.id });
+  const result = await db.insert(products).values({ ...data, active: true }).$returningId();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -215,7 +214,7 @@ export async function createStockMovement(data: Omit<InsertStockMovement, "id" |
   if (!db) throw new Error("Database not available");
   
   // Insert movement
-  const result = await db.insert(stockMovements).values(data).returning({ id: stockMovements.id });
+  const result = await db.insert(stockMovements).values(data).$returningId();
   
   // Update product stock
   const product = await db.select().from(products).where(eq(products.id, data.productId)).limit(1);
@@ -257,7 +256,7 @@ export async function createOrder(data: Omit<InsertOrder, "id" | "createdAt" | "
     subtotal: "0",
     total: "0",
     deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : null,
-  }).returning({ id: orders.id });
+  }).$returningId();
   
   return { id: result[0]?.id ?? 0, orderNumber };
 }
@@ -281,7 +280,7 @@ export async function addOrderItem(data: Omit<InsertOrderItem, "id" | "total">) 
   if (!db) throw new Error("Database not available");
   
   const total = (parseFloat(data.unitPrice) * data.quantity).toFixed(2);
-  const result = await db.insert(orderItems).values({ ...data, total }).returning({ id: orderItems.id });
+  const result = await db.insert(orderItems).values({ ...data, total }).$returningId();
   
   // Update order totals
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, data.orderId));
@@ -330,7 +329,7 @@ export async function createFinancialAccount(data: Omit<InsertFinancialAccount, 
     ...data,
     dueDate: new Date(data.dueDate),
     status: "pendente",
-  }).returning({ id: financialAccounts.id });
+  }).$returningId();
   
   return { id: result[0]?.id ?? 0 };
 }
@@ -420,7 +419,7 @@ export async function createCompany(data: Omit<InsertCompany, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(companies).values(data).returning({ id: companies.id });
+  const result = await db.insert(companies).values(data).$returningId();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -438,4 +437,119 @@ export async function deleteCompany(id: number) {
   
   await db.delete(companies).where(eq(companies.id, id));
   return { success: true };
+}
+
+
+// ============ LOCAL AUTHENTICATION ============
+import bcrypt from "bcrypt";
+
+const SALT_ROUNDS = 10;
+
+export async function hashPassword(password: string): Promise<string> {
+  return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+  return await bcrypt.compare(password, hash);
+}
+
+export async function getUserByUsername(username: string) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createLocalUser(data: {
+  username: string;
+  password: string;
+  name: string;
+  empresa?: string;
+  filial?: string;
+  departamento?: string;
+  role?: "user" | "admin";
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Check if username already exists
+  const existing = await getUserByUsername(data.username);
+  if (existing) {
+    throw new Error("Username already exists");
+  }
+
+  const passwordHash = await hashPassword(data.password);
+  const openId = `local_${nanoid(16)}`; // Generate a unique openId for local users
+
+  const result = await db.insert(users).values({
+    openId,
+    username: data.username,
+    passwordHash,
+    name: data.name,
+    empresa: data.empresa || null,
+    filial: data.filial || null,
+    departamento: data.departamento || null,
+    role: data.role || "user",
+    loginMethod: "local",
+    lastSignedIn: new Date(),
+  }).$returningId();
+
+  return { id: result[0]?.id ?? 0, openId };
+}
+
+export async function authenticateLocalUser(username: string, password: string) {
+  const user = await getUserByUsername(username);
+  
+  if (!user || !user.passwordHash) {
+    return null;
+  }
+
+  const isValid = await verifyPassword(password, user.passwordHash);
+  if (!isValid) {
+    return null;
+  }
+
+  // Update last signed in
+  const db = await getDb();
+  if (db) {
+    await db.update(users)
+      .set({ lastSignedIn: new Date() })
+      .where(eq(users.id, user.id));
+  }
+
+  return user;
+}
+
+export async function ensureAdminUser() {
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[Database] Cannot ensure admin user: database not available");
+      return;
+    }
+
+    // Check if admin user exists
+    const adminUser = await getUserByUsername("admin");
+    if (!adminUser) {
+      console.log("[Database] Creating default admin user...");
+      await createLocalUser({
+        username: "admin",
+        password: "admin123", // Default password - should be changed after first login
+        name: "Administrador",
+        empresa: "BEM CASADO",
+        filial: "MATRIZ",
+        departamento: "TI",
+        role: "admin",
+      });
+      console.log("[Database] Default admin user created successfully");
+    } else {
+      console.log("[Database] Admin user already exists");
+    }
+  } catch (error) {
+    console.warn("[Database] Could not ensure admin user (will retry on next startup):", error);
+  }
 }

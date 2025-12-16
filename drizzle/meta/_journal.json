@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1765892628378,
-      "tag": "0000_skinny_terror",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1765892743124,
-      "tag": "0001_loose_cannonball",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1765896562353,
-      "tag": "0002_bored_anita_blake",
+      "when": 1765909528943,
+      "tag": "0000_fearless_boomer",
       "breakpoints": true
     }
   ]

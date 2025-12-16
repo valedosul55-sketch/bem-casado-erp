@@ -5,6 +5,9 @@ import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import {
   getCustomers,
+  authenticateLocalUser,
+  createLocalUser,
+  getUserByUsername,
   createCustomer,
   updateCustomer,
   deleteCustomer,
@@ -42,6 +45,73 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    // Local authentication
+    localLogin: publicProcedure
+      .input(
+        z.object({
+          username: z.string().min(1),
+          password: z.string().min(1),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        const user = await authenticateLocalUser(input.username, input.password);
+        if (!user) {
+          throw new Error("Usuário ou senha inválidos");
+        }
+
+        // Create JWT token and set cookie
+        const jwt = await import("jsonwebtoken");
+        const token = jwt.default.sign(
+          { openId: user.openId, userId: user.id },
+          process.env.JWT_SECRET || "secret",
+          { expiresIn: "7d" }
+        );
+
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            name: user.name,
+            username: user.username,
+            role: user.role,
+            empresa: user.empresa,
+            filial: user.filial,
+            departamento: user.departamento,
+          },
+        };
+      }),
+    register: publicProcedure
+      .input(
+        z.object({
+          username: z.string().min(3),
+          password: z.string().min(6),
+          name: z.string().min(1),
+          empresa: z.string().optional(),
+          filial: z.string().optional(),
+          departamento: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const existing = await getUserByUsername(input.username);
+        if (existing) {
+          throw new Error("Nome de usuário já existe");
+        }
+
+        const result = await createLocalUser({
+          username: input.username,
+          password: input.password,
+          name: input.name,
+          empresa: input.empresa,
+          filial: input.filial,
+          departamento: input.departamento,
+          role: "user",
+        });
+
+        return { success: true, userId: result.id };
+      }),
   }),
 
   // Dashboard
