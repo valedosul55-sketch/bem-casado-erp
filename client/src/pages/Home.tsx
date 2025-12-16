@@ -8,6 +8,9 @@ import { useEffect, useState } from "react";
 import { Loader2, Cloud, Lock, Building2, Users, Briefcase, User, AlertCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
+// Token storage key
+const AUTH_TOKEN_KEY = "bem_casado_auth_token";
+
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
@@ -22,8 +25,12 @@ export default function Home() {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const loginMutation = trpc.auth.localLogin.useMutation({
-    onSuccess: () => {
-      // Refresh the page to update auth state
+    onSuccess: (data) => {
+      // Store token in localStorage for persistence
+      if (data.token) {
+        localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+      }
+      // Redirect to dashboard
       window.location.href = "/dashboard";
     },
     onError: (err) => {

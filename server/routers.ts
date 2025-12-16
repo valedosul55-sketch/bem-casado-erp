@@ -74,6 +74,7 @@ export const appRouter = router({
 
         return {
           success: true,
+          token, // Return token for localStorage storage
           user: {
             id: user.id,
             name: user.name,
