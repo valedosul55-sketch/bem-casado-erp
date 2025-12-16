@@ -113,7 +113,13 @@
 - [x] Tela de configurações do usuário
 
 ## Configuração SMTP Gmail
-- [ ] Configurar variáveis de ambiente SMTP no Railway
-- [ ] Implementar função de envio de email
-- [ ] Integrar envio de email na recuperação de senha
-- [ ] Testar envio de email
+- [x] Configurar variáveis de ambiente SMTP no Railway
+- [x] Implementar função de envio de email
+- [x] Integrar envio de email na recuperação de senha
+- [ ] Testar envio de email (SMTP bloqueado pelo Railway)
+
+## Migração para Resend API
+- [ ] Instalar pacote resend
+- [ ] Criar função de envio de email via Resend API
+- [ ] Configurar variável RESEND_API_KEY no Railway
+- [ ] Testar envio de email de recuperação de senha

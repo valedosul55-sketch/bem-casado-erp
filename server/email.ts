@@ -1,18 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-// Configuração do transporter SMTP do Gmail
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true, // true para 465 (SSL)
-  auth: {
-    user: process.env.SMTP_USER || 'admin@arrozbemcasado.com.br',
-    pass: process.env.SMTP_PASS || '',
-  },
-  connectionTimeout: 10000, // 10 segundos
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-});
+// Configuração do Resend API
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// Email de origem (deve ser um domínio verificado no Resend ou usar onboarding@resend.dev para testes)
+const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev';
+const FROM_NAME = 'ERP Bem Casado';
 
 interface EmailOptions {
   to: string;
@@ -23,16 +16,20 @@ interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    const mailOptions = {
-      from: `"ERP Bem Casado" <${process.env.SMTP_USER || 'admin@arrozbemcasado.com.br'}>`,
-      to: options.to,
+    const { data, error } = await resend.emails.send({
+      from: `${FROM_NAME} <${FROM_EMAIL}>`,
+      to: [options.to],
       subject: options.subject,
       text: options.text,
       html: options.html,
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log('[Email] Message sent:', info.messageId);
+    if (error) {
+      console.error('[Email] Failed to send email:', error);
+      return false;
+    }
+
+    console.log('[Email] Message sent:', data?.id);
     return true;
   } catch (error) {
     console.error('[Email] Failed to send email:', error);
