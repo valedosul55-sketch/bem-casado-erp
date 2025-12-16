@@ -82,4 +82,5 @@
 - [ ] Configurar variáveis no Railway
 
 ## Correção Deploy Railway
-- [ ] Corrigir erro "Cannot GET /" no Railway
+- [x] Corrigir erro "Cannot GET /" no Railway
+- [ ] Corrigir erro "Invalid URL" no Railway
