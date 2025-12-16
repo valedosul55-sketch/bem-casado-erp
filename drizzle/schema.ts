@@ -149,3 +149,29 @@ export const financialCategories = mysqlTable("financialCategories", {
 
 export type FinancialCategory = typeof financialCategories.$inferSelect;
 export type InsertFinancialCategory = typeof financialCategories.$inferInsert;
+
+// Dados da Empresa (Cadastros)
+export const companies = mysqlTable("companies", {
+  id: int("id").autoincrement().primaryKey(),
+  codigo: varchar("codigo", { length: 10 }),
+  dig: varchar("dig", { length: 10 }),
+  ccm: varchar("ccm", { length: 20 }),
+  cnpj: varchar("cnpj", { length: 20 }),
+  nome: varchar("nome", { length: 255 }).notNull(),
+  endereco: text("endereco"),
+  cidade: varchar("cidade", { length: 100 }),
+  estado: varchar("estado", { length: 2 }),
+  cep: varchar("cep", { length: 15 }),
+  inscricaoEstadual: varchar("inscricaoEstadual", { length: 20 }),
+  versao: varchar("versao", { length: 20 }),
+  numeroTerminais: int("numeroTerminais"),
+  usaDigHistorico: boolean("usaDigHistorico").default(false),
+  usaDigCCustos: boolean("usaDigCCustos").default(false),
+  usaDigConta: boolean("usaDigConta").default(false),
+  codigoEmpresaCliente: varchar("codigoEmpresaCliente", { length: 50 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Company = typeof companies.$inferSelect;
+export type InsertCompany = typeof companies.$inferInsert;

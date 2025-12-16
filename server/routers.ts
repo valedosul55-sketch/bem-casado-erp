@@ -26,6 +26,10 @@ import {
   updateFinancialAccount,
   getDashboardStats,
   getProductsLowStock,
+  getCompanies,
+  createCompany,
+  updateCompany,
+  deleteCompany,
 } from "./db";
 
 export const appRouter = router({
@@ -232,6 +236,68 @@ export const appRouter = router({
       )
       .mutation(async ({ input }) => {
         return await addOrderItem(input);
+      }),
+  }),
+
+  // Empresas (Cadastros)
+  companies: router({
+    list: protectedProcedure.query(async () => {
+      return await getCompanies();
+    }),
+    create: protectedProcedure
+      .input(
+        z.object({
+          codigo: z.string().optional(),
+          dig: z.string().optional(),
+          ccm: z.string().optional(),
+          cnpj: z.string().optional(),
+          nome: z.string().min(1),
+          endereco: z.string().optional(),
+          cidade: z.string().optional(),
+          estado: z.string().optional(),
+          cep: z.string().optional(),
+          inscricaoEstadual: z.string().optional(),
+          versao: z.string().optional(),
+          numeroTerminais: z.number().optional(),
+          usaDigHistorico: z.boolean().optional(),
+          usaDigCCustos: z.boolean().optional(),
+          usaDigConta: z.boolean().optional(),
+          codigoEmpresaCliente: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await createCompany(input);
+      }),
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          codigo: z.string().optional(),
+          dig: z.string().optional(),
+          ccm: z.string().optional(),
+          cnpj: z.string().optional(),
+          nome: z.string().optional(),
+          endereco: z.string().optional(),
+          cidade: z.string().optional(),
+          estado: z.string().optional(),
+          cep: z.string().optional(),
+          inscricaoEstadual: z.string().optional(),
+          versao: z.string().optional(),
+          numeroTerminais: z.number().optional(),
+          usaDigHistorico: z.boolean().optional(),
+          usaDigCCustos: z.boolean().optional(),
+          usaDigConta: z.boolean().optional(),
+          codigoEmpresaCliente: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return await updateCompany(id, data);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return await deleteCompany(input.id);
       }),
   }),
 

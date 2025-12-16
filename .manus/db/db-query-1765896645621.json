@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO companies (codigo, dig, ccm, cnpj, nome, endereco, cidade, estado, cep, inscricaoEstadual, versao, numeroTerminais, usaDigHistorico, usaDigCCustos, usaDigConta, codigoEmpresaCliente) VALUES ('169', '30', '304129', '14.295.537/0001', 'IND. E COM. DE ALIMENTOS BEM CASADO', 'ESTRADA SANTO ANTONIO DO ALTO, 257', 'SAO JOSE DOS CAMPOS', 'SP', '12225-810', '645342314116', '13/02/2014', 4, false, false, false, 'N');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4BDC48ZHXVijcoX.2f42e1d912a8 --database 8NmvBBSEEfSLdMuJvLE7Pa --execute INSERT INTO companies (codigo, dig, ccm, cnpj, nome, endereco, cidade, estado, cep, inscricaoEstadual, versao, numeroTerminais, usaDigHistorico, usaDigCCustos, usaDigConta, codigoEmpresaCliente) VALUES ('169', '30', '304129', '14.295.537/0001', 'IND. E COM. DE ALIMENTOS BEM CASADO', 'ESTRADA SANTO ANTONIO DO ALTO, 257', 'SAO JOSE DOS CAMPOS', 'SP', '12225-810', '645342314116', '13/02/2014', 4, false, false, false, 'N');",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 372
+}

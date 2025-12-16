@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { trpc } from "@/lib/trpc";
 import ERPLayout from "@/components/ERPLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -148,10 +149,7 @@ const menuStructure = [
   },
 ];
 
-// Dados de exemplo para a tabela
-const dadosEmpresa = [
-  { dig: "001", ccm: "12345678", nome: "BEM CASADO ALIMENTOS LTDA", cidade: "São Paulo", endereco: "Rua das Flores, 123" },
-];
+// Dados serão carregados do banco via tRPC
 
 interface MenuItem {
   id: string;
@@ -238,6 +236,12 @@ export default function Cadastros() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [maxRows, setMaxRows] = useState("100");
+
+  // Buscar dados das empresas do banco
+  const { data: companies = [] } = trpc.companies.list.useQuery(undefined, {
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -388,15 +392,23 @@ export default function Cadastros() {
                   </TableHeader>
                   <TableBody>
                     {selectedId === "dados-empresa" ? (
-                      dadosEmpresa.map((row, index) => (
-                        <TableRow key={index} className="cursor-pointer hover:bg-muted">
-                          <TableCell>{row.dig}</TableCell>
-                          <TableCell>{row.ccm}</TableCell>
-                          <TableCell className="font-medium">{row.nome}</TableCell>
-                          <TableCell>{row.cidade}</TableCell>
-                          <TableCell>{row.endereco}</TableCell>
+                      companies.length > 0 ? (
+                        companies.map((row) => (
+                          <TableRow key={row.id} className="cursor-pointer hover:bg-muted">
+                            <TableCell>{row.dig || "-"}</TableCell>
+                            <TableCell>{row.ccm || "-"}</TableCell>
+                            <TableCell className="font-medium">{row.nome}</TableCell>
+                            <TableCell>{row.cidade || "-"}</TableCell>
+                            <TableCell>{row.endereco || "-"}</TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                            Nenhuma empresa cadastrada
+                          </TableCell>
                         </TableRow>
-                      ))
+                      )
                     ) : (
                       <TableRow>
                         <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
@@ -411,7 +423,7 @@ export default function Cadastros() {
 
             {/* Footer com total */}
             <div className="flex justify-end mt-2 text-sm text-muted-foreground">
-              Total: {selectedId === "dados-empresa" ? dadosEmpresa.length : 0}
+              Total: {selectedId === "dados-empresa" ? companies.length : 0}
             </div>
           </div>
         </div>

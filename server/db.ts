@@ -17,6 +17,8 @@ import {
   InsertStockMovement,
   financialAccounts,
   InsertFinancialAccount,
+  companies,
+  InsertCompany,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import { nanoid } from "nanoid";
@@ -393,4 +395,45 @@ export async function getDashboardStats() {
       aReceber: 0,
     };
   }
+}
+
+
+// ============ COMPANIES (Dados da Empresa) ============
+export async function getCompanies() {
+  const db = await getDb();
+  if (!db) return [];
+  
+  return await db.select().from(companies).orderBy(desc(companies.createdAt));
+}
+
+export async function getCompanyById(id: number) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(companies).where(eq(companies.id, id)).limit(1);
+  return result.length > 0 ? result[0] : null;
+}
+
+export async function createCompany(data: Omit<InsertCompany, "id" | "createdAt" | "updatedAt">) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(companies).values(data);
+  return { id: result[0].insertId };
+}
+
+export async function updateCompany(id: number, data: Partial<Omit<InsertCompany, "id" | "createdAt" | "updatedAt">>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(companies).set(data).where(eq(companies.id, id));
+  return { success: true };
+}
+
+export async function deleteCompany(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(companies).where(eq(companies.id, id));
+  return { success: true };
 }

@@ -68,3 +68,8 @@
 - [ ] Tabelas > Gerais
 - [ ] Cadastros gerais
 - [ ] Parâmetros do sistema
+
+## Dados da Empresa (Importação)
+- [x] Importar dados da empresa do arquivo Excel
+- [x] Criar tabela de empresas no banco de dados
+- [x] Exibir dados reais na página de Cadastros

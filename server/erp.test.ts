@@ -163,4 +163,15 @@ describe("ERP Bem Casado - Router Tests", () => {
       expect(Array.isArray(result)).toBe(true);
     });
   });
+
+  describe("companies", () => {
+    it("lists companies", async () => {
+      const { ctx } = createAuthContext();
+      const caller = appRouter.createCaller(ctx);
+
+      const result = await caller.companies.list();
+
+      expect(Array.isArray(result)).toBe(true);
+    });
+  });
 });
