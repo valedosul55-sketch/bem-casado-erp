@@ -1,16 +1,22 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, decimal, boolean, serial } from "drizzle-orm/mysql-core";
+import { pgTable, serial, text, varchar, timestamp, integer, decimal, boolean, pgEnum } from "drizzle-orm/pg-core";
+
+// Enums para PostgreSQL
+export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const stockMovementTypeEnum = pgEnum("stock_movement_type", ["entrada", "saida"]);
+export const orderStatusEnum = pgEnum("order_status", ["orcamento", "confirmado", "producao", "pronto", "entregue", "cancelado"]);
+export const financialTypeEnum = pgEnum("financial_type", ["pagar", "receber"]);
+export const financialStatusEnum = pgEnum("financial_status", ["pendente", "pago", "vencido", "cancelado"]);
+export const financialCategoryTypeEnum = pgEnum("financial_category_type", ["receita", "despesa"]);
 
 // Tabela de usuários (autenticação)
-export const users = mysqlTable("users", {
+export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   openId: varchar("openId", { length: 64 }).notNull().unique(),
   name: text("name"),
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
-  /** Hash da senha para autenticação local (bcrypt) */
+  role: roleEnum("role").default("user").notNull(),
   passwordHash: text("passwordHash"),
-  /** Username para login local */
   username: varchar("username", { length: 100 }).unique(),
   empresa: varchar("empresa", { length: 100 }),
   filial: varchar("filial", { length: 100 }),
@@ -24,7 +30,7 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 // Tabela de clientes
-export const customers = mysqlTable("customers", {
+export const customers = pgTable("customers", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   phone: varchar("phone", { length: 20 }),
@@ -43,7 +49,7 @@ export type Customer = typeof customers.$inferSelect;
 export type InsertCustomer = typeof customers.$inferInsert;
 
 // Categorias de produtos
-export const categories = mysqlTable("categories", {
+export const categories = pgTable("categories", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
   description: text("description"),
@@ -54,15 +60,15 @@ export type Category = typeof categories.$inferSelect;
 export type InsertCategory = typeof categories.$inferInsert;
 
 // Tabela de produtos
-export const products = mysqlTable("products", {
+export const products = pgTable("products", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  categoryId: int("categoryId"),
+  categoryId: integer("categoryId"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   cost: decimal("cost", { precision: 10, scale: 2 }),
-  stockQuantity: int("stockQuantity").default(0).notNull(),
-  minStock: int("minStock").default(0),
+  stockQuantity: integer("stockQuantity").default(0).notNull(),
+  minStock: integer("minStock").default(0),
   unit: varchar("unit", { length: 20 }).default("un"),
   imageUrl: text("imageUrl"),
   active: boolean("active").default(true).notNull(),
@@ -74,14 +80,14 @@ export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
 
 // Movimentações de estoque
-export const stockMovements = mysqlTable("stockMovements", {
+export const stockMovements = pgTable("stockMovements", {
   id: serial("id").primaryKey(),
-  productId: int("productId").notNull(),
-  type: mysqlEnum("type", ["entrada", "saida"]).notNull(),
-  quantity: int("quantity").notNull(),
+  productId: integer("productId").notNull(),
+  type: stockMovementTypeEnum("type").notNull(),
+  quantity: integer("quantity").notNull(),
   reason: varchar("reason", { length: 255 }),
   notes: text("notes"),
-  userId: int("userId"),
+  userId: integer("userId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -89,18 +95,18 @@ export type StockMovement = typeof stockMovements.$inferSelect;
 export type InsertStockMovement = typeof stockMovements.$inferInsert;
 
 // Pedidos/Vendas
-export const orders = mysqlTable("orders", {
+export const orders = pgTable("orders", {
   id: serial("id").primaryKey(),
   orderNumber: varchar("orderNumber", { length: 20 }).notNull().unique(),
-  customerId: int("customerId"),
-  status: mysqlEnum("status", ["orcamento", "confirmado", "producao", "pronto", "entregue", "cancelado"]).default("orcamento").notNull(),
+  customerId: integer("customerId"),
+  status: orderStatusEnum("status").default("orcamento").notNull(),
   subtotal: decimal("subtotal", { precision: 10, scale: 2 }).default("0").notNull(),
   discount: decimal("discount", { precision: 10, scale: 2 }).default("0"),
   total: decimal("total", { precision: 10, scale: 2 }).default("0").notNull(),
   deliveryDate: timestamp("deliveryDate"),
   deliveryAddress: text("deliveryAddress"),
   notes: text("notes"),
-  userId: int("userId"),
+  userId: integer("userId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
@@ -109,11 +115,11 @@ export type Order = typeof orders.$inferSelect;
 export type InsertOrder = typeof orders.$inferInsert;
 
 // Itens do pedido
-export const orderItems = mysqlTable("orderItems", {
+export const orderItems = pgTable("orderItems", {
   id: serial("id").primaryKey(),
-  orderId: int("orderId").notNull(),
-  productId: int("productId").notNull(),
-  quantity: int("quantity").notNull(),
+  orderId: integer("orderId").notNull(),
+  productId: integer("productId").notNull(),
+  quantity: integer("quantity").notNull(),
   unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   notes: text("notes"),
@@ -123,19 +129,19 @@ export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = typeof orderItems.$inferInsert;
 
 // Contas financeiras (a pagar e a receber)
-export const financialAccounts = mysqlTable("financialAccounts", {
+export const financialAccounts = pgTable("financialAccounts", {
   id: serial("id").primaryKey(),
-  type: mysqlEnum("type", ["pagar", "receber"]).notNull(),
+  type: financialTypeEnum("type").notNull(),
   description: varchar("description", { length: 255 }).notNull(),
   amount: decimal("amount", { precision: 10, scale: 2 }).notNull(),
   dueDate: timestamp("dueDate").notNull(),
   paidDate: timestamp("paidDate"),
-  status: mysqlEnum("status", ["pendente", "pago", "vencido", "cancelado"]).default("pendente").notNull(),
+  status: financialStatusEnum("status").default("pendente").notNull(),
   category: varchar("category", { length: 100 }),
-  orderId: int("orderId"),
-  customerId: int("customerId"),
+  orderId: integer("orderId"),
+  customerId: integer("customerId"),
   notes: text("notes"),
-  userId: int("userId"),
+  userId: integer("userId"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
 });
@@ -144,10 +150,10 @@ export type FinancialAccount = typeof financialAccounts.$inferSelect;
 export type InsertFinancialAccount = typeof financialAccounts.$inferInsert;
 
 // Categorias financeiras
-export const financialCategories = mysqlTable("financialCategories", {
+export const financialCategories = pgTable("financialCategories", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 100 }).notNull(),
-  type: mysqlEnum("type", ["receita", "despesa"]).notNull(),
+  type: financialCategoryTypeEnum("type").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
@@ -155,7 +161,7 @@ export type FinancialCategory = typeof financialCategories.$inferSelect;
 export type InsertFinancialCategory = typeof financialCategories.$inferInsert;
 
 // Dados da Empresa (Cadastros)
-export const companies = mysqlTable("companies", {
+export const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
   codigo: varchar("codigo", { length: 10 }),
   dig: varchar("dig", { length: 10 }),
@@ -168,7 +174,7 @@ export const companies = mysqlTable("companies", {
   cep: varchar("cep", { length: 15 }),
   inscricaoEstadual: varchar("inscricaoEstadual", { length: 20 }),
   versao: varchar("versao", { length: 20 }),
-  numeroTerminais: int("numeroTerminais"),
+  numeroTerminais: integer("numeroTerminais"),
   usaDigHistorico: boolean("usaDigHistorico").default(false),
   usaDigCCustos: boolean("usaDigCCustos").default(false),
   usaDigConta: boolean("usaDigConta").default(false),

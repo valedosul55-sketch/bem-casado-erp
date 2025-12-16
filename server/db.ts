@@ -1,5 +1,5 @@
 import { eq, desc, sql, and, lte, gte } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { 
   InsertUser, 
   users, 
@@ -88,8 +88,9 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    // MySQL upsert using ON DUPLICATE KEY UPDATE
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    // PostgreSQL upsert using ON CONFLICT
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {
@@ -120,7 +121,7 @@ export async function createCustomer(data: Omit<InsertCustomer, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(customers).values(data).$returningId();
+  const result = await db.insert(customers).values(data).returning();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -152,7 +153,7 @@ export async function createCategory(data: Omit<InsertCategory, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(categories).values(data).$returningId();
+  const result = await db.insert(categories).values(data).returning();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -175,7 +176,7 @@ export async function createProduct(data: Omit<InsertProduct, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(products).values({ ...data, active: true }).$returningId();
+  const result = await db.insert(products).values({ ...data, active: true }).returning();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -214,7 +215,7 @@ export async function createStockMovement(data: Omit<InsertStockMovement, "id" |
   if (!db) throw new Error("Database not available");
   
   // Insert movement
-  const result = await db.insert(stockMovements).values(data).$returningId();
+  const result = await db.insert(stockMovements).values(data).returning();
   
   // Update product stock
   const product = await db.select().from(products).where(eq(products.id, data.productId)).limit(1);
@@ -256,7 +257,7 @@ export async function createOrder(data: Omit<InsertOrder, "id" | "createdAt" | "
     subtotal: "0",
     total: "0",
     deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : null,
-  }).$returningId();
+  }).returning();
   
   return { id: result[0]?.id ?? 0, orderNumber };
 }
@@ -280,7 +281,7 @@ export async function addOrderItem(data: Omit<InsertOrderItem, "id" | "total">) 
   if (!db) throw new Error("Database not available");
   
   const total = (parseFloat(data.unitPrice) * data.quantity).toFixed(2);
-  const result = await db.insert(orderItems).values({ ...data, total }).$returningId();
+  const result = await db.insert(orderItems).values({ ...data, total }).returning();
   
   // Update order totals
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, data.orderId));
@@ -329,7 +330,7 @@ export async function createFinancialAccount(data: Omit<InsertFinancialAccount, 
     ...data,
     dueDate: new Date(data.dueDate),
     status: "pendente",
-  }).$returningId();
+  }).returning();
   
   return { id: result[0]?.id ?? 0 };
 }
@@ -419,7 +420,7 @@ export async function createCompany(data: Omit<InsertCompany, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(companies).values(data).$returningId();
+  const result = await db.insert(companies).values(data).returning();
   return { id: result[0]?.id ?? 0 };
 }
 
@@ -496,7 +497,7 @@ export async function createLocalUser(data: {
     role: data.role || "user",
     loginMethod: "local",
     lastSignedIn: new Date(),
-  }).$returningId();
+  }).returning();
 
   return { id: result[0]?.id ?? 0, openId };
 }
