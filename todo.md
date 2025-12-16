@@ -119,7 +119,11 @@
 - [ ] Testar envio de email (SMTP bloqueado pelo Railway)
 
 ## Migração para Resend API
-- [ ] Instalar pacote resend
-- [ ] Criar função de envio de email via Resend API
-- [ ] Configurar variável RESEND_API_KEY no Railway
-- [ ] Testar envio de email de recuperação de senha
+- [x] Instalar pacote resend
+- [x] Criar função de envio de email via Resend API
+- [x] Configurar variável RESEND_API_KEY no Railway
+- [x] Testar envio de email de recuperação de senha
+
+## Próximos Passos (Produção)
+- [ ] Verificar domínio arrozbemcasado.com.br no Resend
+- [ ] Configurar RESEND_FROM_EMAIL no Railway com email do domínio verificado
