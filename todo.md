@@ -78,5 +78,8 @@
 - [x] Alterar schema de MySQL para PostgreSQL
 - [x] Atualizar dependências (mysql2 -> pg)
 - [x] Atualizar db.ts para usar PostgreSQL
-- [ ] Fazer push para GitHub
+- [x] Fazer push para GitHub
 - [ ] Configurar variáveis no Railway
+
+## Correção Deploy Railway
+- [ ] Corrigir erro "Cannot GET /" no Railway
