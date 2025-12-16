@@ -469,6 +469,7 @@ export async function createLocalUser(data: {
   username: string;
   password: string;
   name: string;
+  email?: string;
   empresa?: string;
   filial?: string;
   departamento?: string;
@@ -486,17 +487,24 @@ export async function createLocalUser(data: {
   const passwordHash = await hashPassword(data.password);
   const openId = `local_${nanoid(16)}`; // Generate a unique openId for local users
 
+  const now = new Date();
   const result = await db.insert(users).values({
     openId,
     username: data.username,
     passwordHash,
     name: data.name,
+    email: data.email || null,
     empresa: data.empresa || null,
     filial: data.filial || null,
     departamento: data.departamento || null,
     role: data.role || "user",
     loginMethod: "local",
-    lastSignedIn: new Date(),
+    active: true,
+    resetToken: null,
+    resetTokenExpiry: null,
+    createdAt: now,
+    updatedAt: now,
+    lastSignedIn: now,
   }).returning();
 
   return { id: result[0]?.id ?? 0, openId };
