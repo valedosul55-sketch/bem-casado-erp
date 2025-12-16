@@ -1,5 +1,5 @@
 import { eq, desc, sql, and, lte, gte } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/node-postgres";
 import { 
   InsertUser, 
   users, 
@@ -88,7 +88,9 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    // PostgreSQL upsert using ON CONFLICT
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.openId,
       set: updateSet,
     });
   } catch (error) {
@@ -119,8 +121,8 @@ export async function createCustomer(data: Omit<InsertCustomer, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(customers).values(data);
-  return { id: result[0].insertId };
+  const result = await db.insert(customers).values(data).returning({ id: customers.id });
+  return { id: result[0]?.id ?? 0 };
 }
 
 export async function updateCustomer(data: { id: number } & Partial<InsertCustomer>) {
@@ -151,8 +153,8 @@ export async function createCategory(data: Omit<InsertCategory, "id" | "createdA
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(categories).values(data);
-  return { id: result[0].insertId };
+  const result = await db.insert(categories).values(data).returning({ id: categories.id });
+  return { id: result[0]?.id ?? 0 };
 }
 
 // ============ PRODUCTS ============
@@ -174,8 +176,8 @@ export async function createProduct(data: Omit<InsertProduct, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(products).values({ ...data, active: true });
-  return { id: result[0].insertId };
+  const result = await db.insert(products).values({ ...data, active: true }).returning({ id: products.id });
+  return { id: result[0]?.id ?? 0 };
 }
 
 export async function updateProduct(data: { id: number } & Partial<InsertProduct>) {
@@ -213,7 +215,7 @@ export async function createStockMovement(data: Omit<InsertStockMovement, "id" |
   if (!db) throw new Error("Database not available");
   
   // Insert movement
-  const result = await db.insert(stockMovements).values(data);
+  const result = await db.insert(stockMovements).values(data).returning({ id: stockMovements.id });
   
   // Update product stock
   const product = await db.select().from(products).where(eq(products.id, data.productId)).limit(1);
@@ -228,7 +230,7 @@ export async function createStockMovement(data: Omit<InsertStockMovement, "id" |
       .where(eq(products.id, data.productId));
   }
   
-  return { id: result[0].insertId };
+  return { id: result[0]?.id ?? 0 };
 }
 
 // ============ ORDERS ============
@@ -255,9 +257,9 @@ export async function createOrder(data: Omit<InsertOrder, "id" | "createdAt" | "
     subtotal: "0",
     total: "0",
     deliveryDate: data.deliveryDate ? new Date(data.deliveryDate) : null,
-  });
+  }).returning({ id: orders.id });
   
-  return { id: result[0].insertId, orderNumber };
+  return { id: result[0]?.id ?? 0, orderNumber };
 }
 
 export async function updateOrderStatus(id: number, status: string) {
@@ -279,7 +281,7 @@ export async function addOrderItem(data: Omit<InsertOrderItem, "id" | "total">) 
   if (!db) throw new Error("Database not available");
   
   const total = (parseFloat(data.unitPrice) * data.quantity).toFixed(2);
-  const result = await db.insert(orderItems).values({ ...data, total });
+  const result = await db.insert(orderItems).values({ ...data, total }).returning({ id: orderItems.id });
   
   // Update order totals
   const items = await db.select().from(orderItems).where(eq(orderItems.orderId, data.orderId));
@@ -293,7 +295,7 @@ export async function addOrderItem(data: Omit<InsertOrderItem, "id" | "total">) 
     .set({ subtotal: subtotal.toFixed(2), total: orderTotal.toFixed(2) })
     .where(eq(orders.id, data.orderId));
   
-  return { id: result[0].insertId };
+  return { id: result[0]?.id ?? 0 };
 }
 
 // ============ FINANCIAL ============
@@ -328,9 +330,9 @@ export async function createFinancialAccount(data: Omit<InsertFinancialAccount, 
     ...data,
     dueDate: new Date(data.dueDate),
     status: "pendente",
-  });
+  }).returning({ id: financialAccounts.id });
   
-  return { id: result[0].insertId };
+  return { id: result[0]?.id ?? 0 };
 }
 
 export async function updateFinancialAccount(data: { id: number; status?: string; paidDate?: string }) {
@@ -418,8 +420,8 @@ export async function createCompany(data: Omit<InsertCompany, "id" | "createdAt"
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(companies).values(data);
-  return { id: result[0].insertId };
+  const result = await db.insert(companies).values(data).returning({ id: companies.id });
+  return { id: result[0]?.id ?? 0 };
 }
 
 export async function updateCompany(id: number, data: Partial<Omit<InsertCompany, "id" | "createdAt" | "updatedAt">>) {

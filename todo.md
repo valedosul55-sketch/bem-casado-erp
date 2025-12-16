@@ -73,3 +73,10 @@
 - [x] Importar dados da empresa do arquivo Excel
 - [x] Criar tabela de empresas no banco de dados
 - [x] Exibir dados reais na página de Cadastros
+
+## Migração para PostgreSQL
+- [x] Alterar schema de MySQL para PostgreSQL
+- [x] Atualizar dependências (mysql2 -> pg)
+- [x] Atualizar db.ts para usar PostgreSQL
+- [ ] Fazer push para GitHub
+- [ ] Configurar variáveis no Railway
