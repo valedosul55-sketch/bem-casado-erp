@@ -69,7 +69,8 @@ export const appRouter = router({
         });
 
         const cookieOptions = getSessionCookieOptions(ctx.req);
-        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+        const ONE_YEAR_MS = 365 * 24 * 60 * 60 * 1000;
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
         return {
           success: true,
