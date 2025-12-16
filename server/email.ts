@@ -3,12 +3,15 @@ import nodemailer from 'nodemailer';
 // Configuração do transporter SMTP do Gmail
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // true para 465, false para outras portas
+  port: 465,
+  secure: true, // true para 465 (SSL)
   auth: {
     user: process.env.SMTP_USER || 'admin@arrozbemcasado.com.br',
     pass: process.env.SMTP_PASS || '',
   },
+  connectionTimeout: 10000, // 10 segundos
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
 });
 
 interface EmailOptions {
