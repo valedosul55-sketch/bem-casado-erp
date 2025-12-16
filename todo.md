@@ -92,3 +92,22 @@
 - [x] Atualizar frontend para autenticação local
 - [x] Criar usuário admin padrão
 - [x] Deploy e teste no Railway
+
+## Gestão de Usuários
+- [x] Tela de listagem de usuários
+- [x] Formulário de cadastro de novos usuários
+- [x] Edição e exclusão de usuários
+- [x] Perfis de acesso (admin, gerente, vendedor, operador)
+
+## Recuperação de Senha
+- [x] Tela de "Esqueci minha senha"
+- [x] Geração de link de recuperação pelo admin
+- [x] Tela de redefinição de senha
+- [x] Validação de token de recuperação
+
+## Controle de Permissões
+- [x] Definir permissões por perfil/departamento
+- [x] Middleware de verificação de permissões
+- [x] Ocultar menus não autorizados na sidebar
+- [x] Bloquear acesso a rotas não autorizadas
+- [x] Tela de configurações do usuário

@@ -472,7 +472,7 @@ export async function createLocalUser(data: {
   empresa?: string;
   filial?: string;
   departamento?: string;
-  role?: "user" | "admin";
+  role?: "user" | "admin" | "gerente" | "vendedor" | "operador";
 }) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -553,4 +553,157 @@ export async function ensureAdminUser() {
   } catch (error) {
     console.warn("[Database] Could not ensure admin user (will retry on next startup):", error);
   }
+}
+
+
+// ============ USER MANAGEMENT ============
+export async function getAllUsers() {
+  const db = await getDb();
+  if (!db) return [];
+  return await db.select({
+    id: users.id,
+    name: users.name,
+    username: users.username,
+    email: users.email,
+    role: users.role,
+    empresa: users.empresa,
+    filial: users.filial,
+    departamento: users.departamento,
+    active: users.active,
+    createdAt: users.createdAt,
+    lastSignedIn: users.lastSignedIn,
+  }).from(users).orderBy(desc(users.createdAt));
+}
+
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateUser(id: number, data: {
+  name?: string;
+  email?: string;
+  role?: "user" | "admin" | "gerente" | "vendedor" | "operador";
+  empresa?: string;
+  filial?: string;
+  departamento?: string;
+  active?: boolean;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(users).set({
+    ...data,
+    updatedAt: new Date(),
+  }).where(eq(users.id, id));
+  return { success: true };
+}
+
+export async function deleteUser(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Soft delete - just deactivate
+  await db.update(users).set({ active: false, updatedAt: new Date() }).where(eq(users.id, id));
+  return { success: true };
+}
+
+export async function changeUserPassword(id: number, newPassword: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const passwordHash = await hashPassword(newPassword);
+  await db.update(users).set({ passwordHash, updatedAt: new Date() }).where(eq(users.id, id));
+  return { success: true };
+}
+
+// ============ PASSWORD RESET ============
+export async function createPasswordResetToken(email: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  // Find user by email
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  if (result.length === 0) {
+    return null; // User not found, but don't reveal this
+  }
+  
+  const user = result[0];
+  const resetToken = nanoid(32);
+  const resetTokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+  
+  await db.update(users).set({
+    resetToken,
+    resetTokenExpiry,
+    updatedAt: new Date(),
+  }).where(eq(users.id, user.id));
+  
+  return { userId: user.id, email: user.email, resetToken, name: user.name };
+}
+
+export async function validateResetToken(token: string) {
+  const db = await getDb();
+  if (!db) return null;
+  
+  const result = await db.select().from(users)
+    .where(eq(users.resetToken, token))
+    .limit(1);
+  
+  if (result.length === 0) return null;
+  
+  const user = result[0];
+  if (!user.resetTokenExpiry || user.resetTokenExpiry < new Date()) {
+    return null; // Token expired
+  }
+  
+  return user;
+}
+
+export async function resetPasswordWithToken(token: string, newPassword: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const user = await validateResetToken(token);
+  if (!user) {
+    throw new Error("Token inválido ou expirado");
+  }
+  
+  const passwordHash = await hashPassword(newPassword);
+  await db.update(users).set({
+    passwordHash,
+    resetToken: null,
+    resetTokenExpiry: null,
+    updatedAt: new Date(),
+  }).where(eq(users.id, user.id));
+  
+  return { success: true };
+}
+
+// ============ PERMISSIONS ============
+export const ROLE_PERMISSIONS: Record<string, string[]> = {
+  admin: ["*"], // All permissions
+  gerente: [
+    "dashboard", "vendas", "clientes", "produtos", "estoque", 
+    "financeiro", "relatorios", "cadastros", "usuarios"
+  ],
+  vendedor: [
+    "dashboard", "vendas", "clientes", "produtos"
+  ],
+  operador: [
+    "dashboard", "produtos", "estoque"
+  ],
+  user: [
+    "dashboard"
+  ],
+};
+
+export function getUserPermissions(role: string): string[] {
+  return ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.user;
+}
+
+export function hasPermission(role: string, permission: string): boolean {
+  const permissions = getUserPermissions(role);
+  return permissions.includes("*") || permissions.includes(permission);
 }

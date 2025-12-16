@@ -8,6 +8,16 @@ import {
   authenticateLocalUser,
   createLocalUser,
   getUserByUsername,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+  changeUserPassword,
+  createPasswordResetToken,
+  validateResetToken,
+  resetPasswordWithToken,
+  getUserPermissions,
+  hasPermission,
   createCustomer,
   updateCustomer,
   deleteCustomer,
@@ -371,6 +381,158 @@ export const appRouter = router({
       .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
         return await deleteCompany(input.id);
+      }),
+  }),
+
+  // Usuários (Admin)
+  users: router({
+    list: protectedProcedure.query(async ({ ctx }) => {
+      // Only admin and gerente can list users
+      if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+        throw new Error("Sem permissão para acessar usuários");
+      }
+      return await getAllUsers();
+    }),
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para acessar usuários");
+        }
+        return await getUserById(input.id);
+      }),
+    create: protectedProcedure
+      .input(
+        z.object({
+          username: z.string().min(3),
+          password: z.string().min(6),
+          name: z.string().min(1),
+          email: z.string().email().optional().or(z.literal("")),
+          role: z.enum(["user", "admin", "gerente", "vendedor", "operador"]).default("user"),
+          empresa: z.string().optional(),
+          filial: z.string().optional(),
+          departamento: z.string().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para criar usuários");
+        }
+        const existing = await getUserByUsername(input.username);
+        if (existing) {
+          throw new Error("Nome de usuário já existe");
+        }
+        return await createLocalUser({
+          username: input.username,
+          password: input.password,
+          name: input.name,
+          empresa: input.empresa,
+          filial: input.filial,
+          departamento: input.departamento,
+          role: input.role,
+        });
+      }),
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          name: z.string().optional(),
+          email: z.string().email().optional().or(z.literal("")),
+          role: z.enum(["user", "admin", "gerente", "vendedor", "operador"]).optional(),
+          empresa: z.string().optional(),
+          filial: z.string().optional(),
+          departamento: z.string().optional(),
+          active: z.boolean().optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para editar usuários");
+        }
+        const { id, ...data } = input;
+        return await updateUser(id, data);
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para excluir usuários");
+        }
+        return await deleteUser(input.id);
+      }),
+    changePassword: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          newPassword: z.string().min(6),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        // User can change own password, admin can change any
+        if (ctx.user?.id !== input.id && !hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para alterar senha");
+        }
+        return await changeUserPassword(input.id, input.newPassword);
+      }),
+    getPermissions: protectedProcedure.query(({ ctx }) => {
+      return getUserPermissions(ctx.user?.role || 'user');
+    }),
+    generateResetLink: protectedProcedure
+      .input(z.object({ userId: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (!hasPermission(ctx.user?.role || 'user', 'usuarios')) {
+          throw new Error("Sem permissão para gerar link de recuperação");
+        }
+        const user = await getUserById(input.userId);
+        if (!user || !user.email) {
+          throw new Error("Usuário não encontrado ou sem email cadastrado");
+        }
+        const result = await createPasswordResetToken(user.email);
+        if (!result) {
+          throw new Error("Erro ao gerar token de recuperação");
+        }
+        const resetUrl = `https://bem-casado-erp-production.up.railway.app/redefinir-senha?token=${result.resetToken}`;
+        return { resetUrl, userName: user.name, userEmail: user.email };
+      }),
+  }),
+
+  // Password Reset (public routes)
+  passwordReset: router({
+    requestReset: publicProcedure
+      .input(z.object({ email: z.string().email() }))
+      .mutation(async ({ input }) => {
+        const result = await createPasswordResetToken(input.email);
+        
+        // If user found, send email with reset link
+        if (result) {
+          const resetUrl = `https://bem-casado-erp-production.up.railway.app/redefinir-senha?token=${result.resetToken}`;
+          
+          // Store email info for admin notification (since we can't send emails directly from server)
+          // The admin will be notified and can forward the link to the user
+          console.log(`[Password Reset] Token generated for ${result.email}: ${resetUrl}`);
+          
+          // Note: Email sending via Gmail MCP is only available in the Manus sandbox environment
+          // For production, consider integrating with SendGrid, Mailchimp, or similar service
+        }
+        
+        // Always return success to prevent email enumeration
+        return { success: true, message: "Se o email existir, você receberá um link de recuperação." };
+      }),
+    validateToken: publicProcedure
+      .input(z.object({ token: z.string() }))
+      .query(async ({ input }) => {
+        const user = await validateResetToken(input.token);
+        return { valid: !!user };
+      }),
+    resetPassword: publicProcedure
+      .input(
+        z.object({
+          token: z.string(),
+          newPassword: z.string().min(6),
+        })
+      )
+      .mutation(async ({ input }) => {
+        return await resetPasswordWithToken(input.token, input.newPassword);
       }),
   }),
 

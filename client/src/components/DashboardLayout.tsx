@@ -21,16 +21,38 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { LayoutDashboard, LogOut, PanelLeft, Users } from "lucide-react";
+import { LayoutDashboard, LogOut, PanelLeft, Users, Package, ShoppingCart, DollarSign, BarChart3, Settings, Database, Warehouse } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Page 1", path: "/" },
-  { icon: Users, label: "Page 2", path: "/some-path" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", permission: "dashboard" },
+  { icon: Users, label: "Clientes", path: "/clientes", permission: "clientes" },
+  { icon: Package, label: "Produtos", path: "/produtos", permission: "produtos" },
+  { icon: Warehouse, label: "Estoque", path: "/estoque", permission: "estoque" },
+  { icon: ShoppingCart, label: "Vendas", path: "/vendas", permission: "vendas" },
+  { icon: DollarSign, label: "Financeiro", path: "/financeiro", permission: "financeiro" },
+  { icon: BarChart3, label: "Relatórios", path: "/relatorios", permission: "relatorios" },
+  { icon: Database, label: "Cadastros", path: "/cadastros", permission: "cadastros" },
+  { icon: Users, label: "Usuários", path: "/usuarios", permission: "usuarios" },
+  { icon: Settings, label: "Configurações", path: "/configuracoes", permission: "*" },
 ];
+
+// Permission mapping by role
+const ROLE_PERMISSIONS: Record<string, string[]> = {
+  admin: ["*"],
+  gerente: ["dashboard", "clientes", "produtos", "estoque", "vendas", "financeiro", "relatorios", "cadastros", "usuarios"],
+  vendedor: ["dashboard", "clientes", "produtos", "vendas"],
+  operador: ["dashboard", "produtos", "estoque"],
+  user: ["dashboard"],
+};
+
+const hasPermission = (role: string, permission: string): boolean => {
+  const permissions = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.user;
+  return permissions.includes("*") || permissions.includes(permission);
+};
 
 const SIDEBAR_WIDTH_KEY = "sidebar-width";
 const DEFAULT_WIDTH = 280;
@@ -113,6 +135,8 @@ function DashboardLayoutContent({
   const [isResizing, setIsResizing] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
+  const userRole = user?.role || 'user';
+  const visibleMenuItems = menuItems.filter(item => hasPermission(userRole, item.permission));
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -171,7 +195,7 @@ function DashboardLayoutContent({
               {!isCollapsed ? (
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="font-semibold tracking-tight truncate">
-                    Navigation
+                    ERP Bem Casado
                   </span>
                 </div>
               ) : null}
@@ -180,7 +204,7 @@ function DashboardLayoutContent({
 
           <SidebarContent className="gap-0">
             <SidebarMenu className="px-2 py-1">
-              {menuItems.map(item => {
+              {visibleMenuItems.map(item => {
                 const isActive = location === item.path;
                 return (
                   <SidebarMenuItem key={item.path}>

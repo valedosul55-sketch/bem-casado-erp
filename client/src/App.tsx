@@ -13,6 +13,9 @@ import Vendas from "./pages/Vendas";
 import Financeiro from "./pages/Financeiro";
 import Relatorios from "./pages/Relatorios";
 import Cadastros from "./pages/Cadastros";
+import Usuarios from "./pages/Usuarios";
+import RecuperarSenha, { RedefinirSenha } from "./pages/RecuperarSenha";
+import Configuracoes from "./pages/Configuracoes";
 
 function Router() {
   return (
@@ -27,6 +30,10 @@ function Router() {
       <Route path={"/financeiro"} component={Financeiro} />
       <Route path={"/relatorios"} component={Relatorios} />
       <Route path={"/cadastros"} component={Cadastros} />
+      <Route path={"/usuarios"} component={Usuarios} />
+      <Route path={"/configuracoes"} component={Configuracoes} />
+      <Route path={"/recuperar-senha"} component={RecuperarSenha} />
+      <Route path={"/redefinir-senha"} component={RedefinirSenha} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

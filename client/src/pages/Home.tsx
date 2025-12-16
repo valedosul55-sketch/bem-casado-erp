@@ -200,8 +200,20 @@ export default function Home() {
               )}
             </Button>
 
+            {/* Forgot Password */}
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="link"
+                className="text-orange-600 hover:text-orange-700 text-sm"
+                onClick={() => setLocation("/recuperar-senha")}
+              >
+                Esqueceu a senha?
+              </Button>
+            </div>
+
             {/* Footer */}
-            <p className="text-center text-xs text-gray-400 pt-4">
+            <p className="text-center text-xs text-gray-400 pt-2">
               ERP Bem Casado v1.0 - Sistema de Gestão
             </p>
           </form>

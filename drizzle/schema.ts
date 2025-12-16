@@ -1,7 +1,7 @@
 import { pgTable, serial, text, varchar, timestamp, integer, decimal, boolean, pgEnum } from "drizzle-orm/pg-core";
 
 // Enums para PostgreSQL
-export const roleEnum = pgEnum("role", ["user", "admin"]);
+export const roleEnum = pgEnum("role", ["user", "admin", "gerente", "vendedor", "operador"]);
 export const stockMovementTypeEnum = pgEnum("stock_movement_type", ["entrada", "saida"]);
 export const orderStatusEnum = pgEnum("order_status", ["orcamento", "confirmado", "producao", "pronto", "entregue", "cancelado"]);
 export const financialTypeEnum = pgEnum("financial_type", ["pagar", "receber"]);
@@ -21,6 +21,9 @@ export const users = pgTable("users", {
   empresa: varchar("empresa", { length: 100 }),
   filial: varchar("filial", { length: 100 }),
   departamento: varchar("departamento", { length: 100 }),
+  active: boolean("active").default(true).notNull(),
+  resetToken: varchar("resetToken", { length: 255 }),
+  resetTokenExpiry: timestamp("resetTokenExpiry"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
