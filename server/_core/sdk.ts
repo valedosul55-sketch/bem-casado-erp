@@ -261,14 +261,20 @@ class SDKServer {
     let sessionToken: string | undefined;
     
     const authHeader = req.headers.authorization;
+    console.log('[Auth] Authorization header:', authHeader ? 'present' : 'missing');
+    
     if (authHeader && authHeader.startsWith('Bearer ')) {
       sessionToken = authHeader.substring(7);
+      console.log('[Auth] Using token from Authorization header');
     } else {
       const cookies = this.parseCookies(req.headers.cookie);
       sessionToken = cookies.get(COOKIE_NAME);
+      console.log('[Auth] Using token from cookie:', sessionToken ? 'present' : 'missing');
     }
     
+    console.log('[Auth] Token length:', sessionToken?.length || 0);
     const session = await this.verifySession(sessionToken);
+    console.log('[Auth] Session verified:', session ? 'success' : 'failed');
 
     if (!session) {
       throw ForbiddenError("Invalid session cookie");
