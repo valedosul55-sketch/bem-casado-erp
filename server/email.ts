@@ -16,13 +16,21 @@ interface EmailOptions {
 
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
   try {
-    const { data, error } = await resend.emails.send({
+    // Usar any para evitar problemas de tipagem com a versão do Resend
+    const emailData: any = {
       from: `${FROM_NAME} <${FROM_EMAIL}>`,
       to: [options.to],
       subject: options.subject,
-      text: options.text,
-      html: options.html,
-    });
+    };
+
+    if (options.text) {
+      emailData.text = options.text;
+    }
+    if (options.html) {
+      emailData.html = options.html;
+    }
+
+    const { data, error } = await resend.emails.send(emailData);
 
     if (error) {
       console.error('[Email] Failed to send email:', error);
