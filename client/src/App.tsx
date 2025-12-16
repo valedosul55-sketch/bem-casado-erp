@@ -12,6 +12,7 @@ import Estoque from "./pages/Estoque";
 import Vendas from "./pages/Vendas";
 import Financeiro from "./pages/Financeiro";
 import Relatorios from "./pages/Relatorios";
+import Cadastros from "./pages/Cadastros";
 
 function Router() {
   return (
@@ -24,6 +25,7 @@ function Router() {
       <Route path={"/vendas"} component={Vendas} />
       <Route path={"/financeiro"} component={Financeiro} />
       <Route path={"/relatorios"} component={Relatorios} />
+      <Route path={"/cadastros"} component={Cadastros} />
       <Route path={"/404"} component={NotFound} />
       <Route component={NotFound} />
     </Switch>

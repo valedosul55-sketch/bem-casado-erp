@@ -57,3 +57,14 @@
 
 ## Testes
 - [x] Testes unitários para routers
+
+## Módulo de Cadastros (Novo)
+- [x] Página principal de Cadastros com menu hierárquico
+- [x] Tabelas > Dados da Empresa
+- [ ] Tabelas > Organizacionais
+- [ ] Tabelas > Operacionais
+- [ ] Tabelas > Fiscais
+- [ ] Tabelas > Financeiras
+- [ ] Tabelas > Gerais
+- [ ] Cadastros gerais
+- [ ] Parâmetros do sistema

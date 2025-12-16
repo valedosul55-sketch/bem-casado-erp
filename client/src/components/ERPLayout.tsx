@@ -27,6 +27,7 @@ import {
   X,
   ChevronDown,
   Bell,
+  Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ const menuItems = [
   { icon: Warehouse, label: "Estoque", href: "/estoque" },
   { icon: DollarSign, label: "Financeiro", href: "/financeiro" },
   { icon: BarChart3, label: "Relatórios", href: "/relatorios" },
+  { icon: Database, label: "Cadastros", href: "/cadastros" },
   { icon: Settings, label: "Configurações", href: "/configuracoes" },
 ];
 
