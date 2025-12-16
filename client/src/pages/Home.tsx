@@ -1,31 +1,160 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
-import { Streamdown } from 'streamdown';
+import { useLocation } from "wouter";
+import { useEffect, useState } from "react";
+import { Loader2, Cloud, Lock, Building2, Users, Briefcase, User } from "lucide-react";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The userAuth hooks provides authentication state
-  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const { user, loading, isAuthenticated } = useAuth();
+  const [, setLocation] = useLocation();
+  const [formData, setFormData] = useState({
+    empresa: "BEM CASADO",
+    filial: "MATRIZ",
+    departamento: "GERAL",
+    usuario: "",
+    senha: "",
+  });
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, user, setLocation]);
+
+  const handleLogin = () => {
+    window.location.href = getLoginUrl();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-orange-500 mx-auto" />
+          <p className="mt-4 text-gray-600">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Background with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-amber-100 via-orange-100 to-yellow-100">
+        {/* Decorative circles */}
+        <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-orange-200/50 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-yellow-200/50 rounded-full blur-3xl" />
+      </div>
+
+      {/* Login Card */}
+      <Card className="relative z-10 w-full max-w-md mx-4 shadow-2xl border-0 bg-white/95 backdrop-blur">
+        <CardHeader className="text-center pb-2 pt-8">
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <div className="relative">
+              <Cloud className="w-20 h-20 text-orange-400 fill-orange-100" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-2xl font-bold text-orange-600">BC</span>
+              </div>
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-800">BEM CASADO</h1>
+          <p className="text-sm text-gray-500">Sistema de Gestão para Confeitaria</p>
+        </CardHeader>
+        <CardContent className="space-y-4 px-6 pb-8">
+          {/* Empresa */}
+          <div className="space-y-1">
+            <Label htmlFor="empresa" className="text-xs text-gray-500 flex items-center gap-1">
+              <Building2 className="w-3 h-3" />
+              EMPRESA
+            </Label>
+            <Input
+              id="empresa"
+              value={formData.empresa}
+              onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
+              className="bg-gray-50 border-gray-200"
+              readOnly
+            />
+          </div>
+
+          {/* Filial e Departamento */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label htmlFor="filial" className="text-xs text-gray-500 flex items-center gap-1">
+                <Users className="w-3 h-3" />
+                FILIAL
+              </Label>
+              <Input
+                id="filial"
+                value={formData.filial}
+                onChange={(e) => setFormData({ ...formData, filial: e.target.value })}
+                className="bg-gray-50 border-gray-200"
+                readOnly
+              />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor="departamento" className="text-xs text-gray-500 flex items-center gap-1">
+                <Briefcase className="w-3 h-3" />
+                DEPARTAMENTO
+              </Label>
+              <Input
+                id="departamento"
+                value={formData.departamento}
+                onChange={(e) => setFormData({ ...formData, departamento: e.target.value })}
+                className="bg-gray-50 border-gray-200"
+                readOnly
+              />
+            </div>
+          </div>
+
+          {/* Usuário */}
+          <div className="space-y-1">
+            <Label htmlFor="usuario" className="text-xs text-gray-500 flex items-center gap-1">
+              <User className="w-3 h-3" />
+              USUÁRIO
+            </Label>
+            <Input
+              id="usuario"
+              value={formData.usuario}
+              onChange={(e) => setFormData({ ...formData, usuario: e.target.value })}
+              placeholder="Seu usuário"
+              className="bg-gray-50 border-gray-200"
+            />
+          </div>
+
+          {/* Senha */}
+          <div className="space-y-1">
+            <Label htmlFor="senha" className="text-xs text-gray-500 flex items-center gap-1">
+              <Lock className="w-3 h-3" />
+              SENHA
+            </Label>
+            <Input
+              id="senha"
+              type="password"
+              value={formData.senha}
+              onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
+              placeholder="Sua senha"
+              className="bg-gray-50 border-gray-200"
+            />
+          </div>
+
+          {/* Login Button */}
+          <Button
+            onClick={handleLogin}
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-semibold py-6 text-lg shadow-lg shadow-orange-200"
+          >
+            ENTRAR
+          </Button>
+
+          {/* Footer */}
+          <p className="text-center text-xs text-gray-400 pt-4">
+            ERP Bem Casado v1.0 - Sistema de Gestão
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 }
