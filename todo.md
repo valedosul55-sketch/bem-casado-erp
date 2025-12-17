@@ -127,3 +127,6 @@
 ## Próximos Passos (Produção)
 - [ ] Verificar domínio arrozbemcasado.com.br no Resend
 - [ ] Configurar RESEND_FROM_EMAIL no Railway com email do domínio verificado
+
+## Melhorias de UX
+- [x] Adicionar botão de visualizar/ocultar senha nos campos de senha

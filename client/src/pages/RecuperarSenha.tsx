@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { ArrowLeft, Mail, Lock, CheckCircle } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 
 export default function RecuperarSenha() {
   const [, navigate] = useLocation();
@@ -221,24 +222,24 @@ export function RedefinirSenha() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="password">Nova Senha</Label>
-              <Input
+              <PasswordInput
                 id="password"
-                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
                 className="mt-1"
+                autoComplete="new-password"
               />
             </div>
             <div>
               <Label htmlFor="confirmPassword">Confirmar Senha</Label>
-              <Input
+              <PasswordInput
                 id="confirmPassword"
-                type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repita a senha"
                 className="mt-1"
+                autoComplete="new-password"
               />
             </div>
             <Button

@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { User, Lock, Shield, Building } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 import DashboardLayout from "@/components/DashboardLayout";
 
 export default function Configuracoes() {
@@ -136,24 +137,24 @@ export default function Configuracoes() {
                 <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
                   <div>
                     <Label htmlFor="newPassword">Nova Senha</Label>
-                    <Input
+                    <PasswordInput
                       id="newPassword"
-                      type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Mínimo 6 caracteres"
                       className="mt-1"
+                      autoComplete="new-password"
                     />
                   </div>
                   <div>
                     <Label htmlFor="confirmPassword">Confirmar Nova Senha</Label>
-                    <Input
+                    <PasswordInput
                       id="confirmPassword"
-                      type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Repita a nova senha"
                       className="mt-1"
+                      autoComplete="new-password"
                     />
                   </div>
                   <Button

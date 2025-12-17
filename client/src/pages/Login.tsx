@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Cloud, Lock, Building2, GitBranch, Users, User } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 import { getLoginUrl } from "@/const";
 
 export default function Login() {
@@ -146,10 +147,9 @@ export default function Login() {
                 <Lock className="w-4 h-4 text-orange-500" />
                 Senha
               </Label>
-              <Input
+              <PasswordInput
                 id="senha"
                 name="senha"
-                type="password"
                 placeholder="••••••••"
                 value={formData.senha}
                 onChange={handleChange}

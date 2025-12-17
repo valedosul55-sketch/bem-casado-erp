@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import { Loader2, Cloud, Lock, Building2, Users, Briefcase, User, AlertCircle } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 import { trpc } from "@/lib/trpc";
 
 // Token storage key
@@ -173,9 +174,8 @@ export default function Home() {
                 <Lock className="w-3 h-3" />
                 SENHA
               </Label>
-              <Input
+              <PasswordInput
                 id="senha"
-                type="password"
                 value={formData.senha}
                 onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
                 placeholder="Sua senha"

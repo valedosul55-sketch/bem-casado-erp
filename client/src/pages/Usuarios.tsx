@@ -28,6 +28,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Key, UserCheck, UserX, Link2, Copy, Check } from "lucide-react";
+import { PasswordInput } from "@/components/PasswordInput";
 
 const ROLE_LABELS: Record<string, string> = {
   admin: "Administrador",
@@ -241,11 +242,11 @@ export default function Usuarios() {
                 </div>
                 <div>
                   <Label>Senha *</Label>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     placeholder="******"
+                    autoComplete="new-password"
                   />
                 </div>
               </div>
@@ -455,11 +456,11 @@ export default function Usuarios() {
             </p>
             <div>
               <Label>Nova Senha</Label>
-              <Input
-                type="password"
+              <PasswordInput
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Mínimo 6 caracteres"
+                autoComplete="new-password"
               />
             </div>
             <div className="flex justify-end gap-2">
